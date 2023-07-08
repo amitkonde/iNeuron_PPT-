@@ -1,0 +1,288 @@
+Question 1
+Given an integer n, return true if it is a power of two. Otherwise, return false.
+An integer n is a power of two, if there exists an integer x such that n == 2x.
+
+Example 1: Input: n = 1
+
+Output: true
+
+Example 2: Input: n = 16
+
+Output: true
+
+Example 3: Input: n = 3
+
+Output: false
+
+Algorithm
+1.Check if n is greater than 0.
+
+2.If n is not greater than 0, return False.
+
+3.Use the bitwise AND operation between n and (n - 1) to unset the rightmost set bit in n.
+
+4.If the result of the bitwise AND operation is 0, return True; otherwise, return False.
+
+def isPowerOfTwo(n):
+    return n > 0 and (n & (n - 1)) == 0
+
+n = 1
+output = isPowerOfTwo(n)
+print(output)  # Output: True
+n = 16
+output = isPowerOfTwo(n)
+print(output)  # Output: True
+n = 3
+output = isPowerOfTwo(n)
+print(output)  # Output: False
+True
+True
+False
+Question 2
+Given a number n, find the sum of the first natural numbers.
+Example 1:
+
+Input: n = 3
+
+Output: 6
+
+Example 2:
+
+Input : 5
+
+Output : 15
+
+Algorithm
+1.Calculate the sum using the formula sum = (n * (n + 1)) / 2.
+
+2.Return the calculated sum.
+
+def sumOfNaturalNumbers(n):
+    sum = (n * (n + 1)) // 2
+    return sum
+n = 3
+output = sumOfNaturalNumbers(n)
+print(output)  
+
+n = 5
+output = sumOfNaturalNumbers(n)
+print(output) 
+6
+15
+Question 3
+Given a positive integer, N. Find the factorial of N.
+Example 1:
+
+Input: N = 5
+
+Output: 120
+
+Example 2:
+
+Input: N = 4
+
+Output: 24
+
+Algorithm
+1.Initialize a variable factorial with a value of 1.
+
+2.Iterate from 1 to N (inclusive) using a loop.
+
+3.Multiply factorial by the current number in each iteration.
+
+4.After the loop, factorial will hold the factorial of N.
+
+5.Return the value of factorial.
+
+def factorial(N):
+    factorial = 1
+    for i in range(1, N+1):
+        factorial *= i
+    return factorial
+N = 5
+output = factorial(N)
+print(output) 
+
+N = 4
+output = factorial(N)
+print(output)  
+120
+24
+Question 4
+Given a number N and a power P, the task is to find the exponent of this number raised to the given power, i.e. N^P.
+Example 1 :
+
+Input: N = 5, P = 2
+
+Output: 25
+
+Example 2 : Input: N = 2, P = 5
+
+Output: 32
+
+Algorithm
+1.Use the ** operator or the pow() function to calculate N raised to the power P.
+
+2.Return the calculated value.
+
+def exponent(N, P):
+    result = N ** P
+    return result
+N = 5
+P = 2
+output = exponent(N, P)
+print(output) 
+
+N = 2
+P = 5
+output = exponent(N, P)
+print(output)  
+25
+32
+Question 5
+Given an array of integers arr, the task is to find maximum element of that array using recursion.
+Example 1:
+
+Input: arr = {1, 4, 3, -5, -4, 8, 6}; Output: 8
+
+Example 2:
+
+Input: arr = {1, 4, 45, 6, 10, -8}; Output: 45
+
+Algorithm
+1.If the length of the array arr is 1, return the single element as the maximum.
+
+2.Otherwise, compare the first element of the array with the maximum element of the rest of the array obtained by a recursive call.
+
+3.Return the larger value as the maximum.
+
+def find_max(arr):
+    if len(arr) == 1:
+        return arr[0]
+    else:
+        return max(arr[0], find_max(arr[1:]))
+arr = [1, 4, 3, -5, -4, 8, 6]
+output = find_max(arr)
+print(output)  
+
+arr = [1, 4, 45, 6, 10, -8]
+output = find_max(arr)
+print(output)  
+8
+45
+Question 6
+Given first term (a), common difference (d) and a integer N of the Arithmetic Progression series, the task is to find Nth term of the series.
+Example 1:
+
+Input : a = 2 d = 1 N = 5 Output : 6 The 5th term of the series is : 6
+
+Example 2:
+
+Input : a = 5 d = 2 N = 10 Output : 23 The 10th term of the series is : 23
+
+Algorithm
+The Nth term of an arithmetic progression series given the first term (a), common difference (d), and the value of N, we can use the formula: Nth term = a + (N - 1) * d
+
+def find_nth_term(a, d, N):
+    return a + (N - 1) * d
+a = 2
+d = 1
+N = 5
+output = find_nth_term(a, d, N)
+print(output)  
+
+a = 5
+d = 2
+N = 10
+output = find_nth_term(a, d, N)
+print(output)  
+6
+23
+Question 7
+Given a string S, the task is to write a program to print all permutations of a given string.
+Example 1:
+
+*Input:*
+
+S = “ABC”
+
+*Output:*
+
+“ABC”, “ACB”, “BAC”, “BCA”, “CBA”, “CAB”
+
+Example 2:
+
+*Input:*
+
+S = “XY” *Output:*
+
+“XY”, “YX”
+
+Algorithm
+1.Initialize an empty list to store the permutations.
+
+2.Define a recursive function permute that takes the current permutation, remaining characters, and the length of the string as parameters.
+
+3.If the length of the current permutation is equal to the length of the string, add it to the list of permutations.
+
+4.Iterate through the remaining characters:
+
+5.Remove the current character from the remaining characters.
+
+6.Add the current character to the current permutation.
+
+7.Recursively call permute with the updated permutation and remaining characters.
+
+8.Restore the current character to the remaining characters.
+
+9.Call the permute function with an empty current permutation, the original string, and its length.
+
+10.Print the list of permutations.
+
+def permute(current_permutation, remaining_chars, length):
+    if len(current_permutation) == length:
+        permutations.append(current_permutation)
+    else:
+        for i in range(len(remaining_chars)):
+            char = remaining_chars[i]
+            permute(current_permutation + char, remaining_chars[:i] + remaining_chars[i+1:], length)
+string = "ABC"
+permutations = []
+permute("", string, len(string))
+print(permutations)
+
+string = "XY"
+permutations = []
+permute("", string, len(string))
+print(permutations)
+['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA']
+['XY', 'YX']
+Question 8
+Given an array, find a product of all array elements.
+Example 1:
+
+Input : arr[] = {1, 2, 3, 4, 5} Output : 120 Example 2:
+
+Input : arr[] = {1, 6, 3} Output : 18
+
+Algorithm
+1.Initialize a variable product to 1.
+
+2.Iterate through each element in the array:
+
+3.Multiply the product by the current element.
+
+4.Return the product.
+
+def product_of_array(arr):
+    product = 1
+    for num in arr:
+        product *= num
+    return product
+arr = [1, 2, 3, 4, 5]
+print(product_of_array(arr))
+
+arr = [1, 6, 3]
+print(product_of_array(arr))
+120
+18

@@ -1,0 +1,242 @@
+Question 1
+A permutation perm of n + 1 integers of all the integers in the range [0, n] can be represented as a string s of length n where:
+s[i] == 'I' if perm[i] < perm[i + 1], and s[i] == 'D' if perm[i] > perm[i + 1]. Given a string s, reconstruct the permutation perm and return it. If there are multiple valid permutations perm, return any of them. Example 1: Input: s = "IDID" Output:[0,4,1,3,2]
+
+Algorithm
+1.Initialize an empty list perm to store the reconstructed permutation. 2.Initialize a variable n to the length of s. 3.Initialize two variables low and high to 0 and n respectively. 4.Iterate over each character ch in the string s. If ch is 'I': Append low to perm. Increment low by 1. If ch is 'D': Append high to perm. Decrement high by 1. 5.Append either low or high to perm. Both values will be equal at this point. 6.Return the reconstructed permutation perm.
+
+def reconstructPermutation(s):
+    n = len(s)
+    perm = []
+    low, high = 0, n
+    for ch in s:
+        if ch == 'I':
+            perm.append(low)
+            low += 1
+        elif ch == 'D':
+            perm.append(high)
+            high -= 1  
+    perm.append(low)  # or perm.append(high)
+    return perm
+s = "IDID"
+reconstructed_permutation = reconstructPermutation(s)
+print(reconstructed_permutation)
+[0, 4, 1, 3, 2]
+Question 2
+You are given an m x n integer matrix matrix with the following two properties:
+Each row is sorted in non-decreasing order. The first integer of each row is greater than the last integer of the previous row. Given an integer target, return true if target is in matrix or false otherwise. You must write a solution in O(log(m * n)) time complexity. Input: matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3 Output: true
+
+Algorithm
+Initialize variables m and n to the number of rows and columns in the matrix, respectively.
+2.Initialize variables left and right to 0 and m * n - 1 respectively, representing the left and right boundaries of the search range.
+3.Perform binary search while left is less than or equal to right:
+4.Calculate the middle index mid as (left + right) // 2.
+5.Convert the middle index mid back to matrix indices using division and modulo operations:
+6.Calculate the row index row as mid // n.
+7.Calculate the column index col as mid % n.
+8.Compare the matrix value at matrix[row][col] with the target:
+        If matrix[row][col] is equal to the target, return True.
+        If matrix[row][col] is less than the target, update left to mid + 1.
+        If matrix[row][col] is greater than the target, update right to mid - 1.
+9.If the target is not found during the binary search, return False.
+def searchMatrix(matrix, target):
+    m, n = len(matrix), len(matrix[0])
+    left, right = 0, m * n - 1
+
+    while left <= right:
+        mid = (left + right) // 2
+        row = mid // n
+        col = mid % n
+        if matrix[row][col] == target:
+            return True
+        elif matrix[row][col] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    
+    return False
+matrix = [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]]
+target = 3
+result = searchMatrix(matrix, target)
+print(result)
+True
+Question 3
+Given an array of integers arr, return true if and only if it is a valid mountain array.
+Recall that arr is a mountain array if and only if: arr.length >= 3 There exists some i with 0 < i < arr.length - 1 such that: arr[0] < arr[1] < ... < arr[i - 1] < arr[i] arr[i] > arr[i + 1] > ... > arr[arr.length - 1] Example 1: Input: arr = [2,1] Output: false
+
+Algorithm
+1.Check if the length of arr is less than 3. If so, return False. 2.Initialize a variable i to 0. 3.Iterate while i is less than n - 1 and arr[i] < arr[i + 1]. This step checks for the increasing part of the array. If the condition is not met, break the loop. Increment i by 1 in each iteration. 4.Check if i is either 0 or n - 1. If so, return False since there is no peak in the array. 5.Iterate while i is less than n - 1 and arr[i] > arr[i + 1]. This step checks for the decreasing part of the array. If the condition is not met, break the loop. Increment i by 1 in each iteration. 6.Check if i is equal to n - 1. If so, return True since the array is a valid mountain array. 7.Otherwise, return False.
+
+def validMountainArray(arr):
+    n = len(arr)
+    
+    if n < 3:
+        return False
+    
+    i = 0
+    while i < n - 1 and arr[i] < arr[i + 1]:
+        i += 1
+    
+    if i == 0 or i == n - 1:
+        return False
+    
+    while i < n - 1 and arr[i] > arr[i + 1]:
+        i += 1
+    
+    return i == n - 1
+arr = [2, 1]
+result = validMountainArray(arr)
+print(result)
+False
+Question 4
+Given a binary array nums, return the maximum length of a contiguous subarray with an equal number of 0 and 1.
+Example 1: Input: nums = [0,1] Output: 2 Explanation: [0, 1] is the longest contiguous subarray with an equal number of 0 and 1.
+
+Algorithm
+1.Initialize a variable max_length to 0 and a variable count to 0. 2.Create an empty hashmap diff_count with an initial key-value pair of (0, -1). This hashmap will store the cumulative difference between the number of 0s and 1s encountered at each index. 3.Iterate over the elements num and their indices i in the nums array. If num is 0, increment count by 1. If num is 1, decrement count by 1. If count is not present as a key in the diff_count hashmap, add it with the value i. If count is already present as a key in the diff_count hashmap, calculate the length of the subarray from the previous occurrence of count to the current index i. Update max_length if this length is greater than the current max_length. 4.Return max_length.
+
+def findMaxLength(nums):
+    max_length = 0
+    count = 0
+    diff_count = {0: -1}
+
+    for i, num in enumerate(nums):
+        count += 1 if num == 0 else -1
+
+        if count not in diff_count:
+            diff_count[count] = i
+        else:
+            length = i - diff_count[count]
+            max_length = max(max_length, length)
+
+    return max_length
+nums = [0, 1]
+result = findMaxLength(nums)
+print(result)
+2
+Question 5
+The product sum of two equal-length arrays a and b is equal to the sum of a[i] * b[i] for all 0 <= i < a.length (0-indexed).
+For example, if a = [1,2,3,4] and b = [5,2,3,1], the product sum would be 15 + 22 + 33 + 41 = 22.
+Given two arrays nums1 and nums2 of length n, return the minimum product sum* if you are allowed to rearrange the order of the elements in* nums1. Example 1:** Input: nums1 = [5,3,4,2], nums2 = [4,2,2,5] Output: 40 Explanation: We can rearrange nums1 to become [3,5,4,2]. The product sum of [3,5,4,2] and [4,2,2,5] is 34 + 52 + 42 + 25 = 40.
+
+Algorithm
+1.Sort nums1 in non-decreasing order. 2.Sort nums2 in non-increasing order. 3.Initialize a variable min_product_sum to 0. 4.Iterate over the elements num1 and num2 in nums1 and nums2 respectively. Multiply num1 with num2. Add the product to min_product_sum. 5.Return min_product_sum
+
+def minProductSum(nums1, nums2):
+    nums1.sort()
+    nums2.sort(reverse=True)
+    
+    min_product_sum = 0
+    for num1, num2 in zip(nums1, nums2):
+        min_product_sum += num1 * num2
+    
+    return min_product_sum
+nums1 = [5, 3, 4, 2]
+nums2 = [4, 2, 2, 5]
+result = minProductSum(nums1, nums2)
+print(result)
+40
+Question 6
+An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
+Given an array changed, return original if changed is a doubled* array. If* changed is not a doubled* array, return an empty array. The elements in* original may be returned in any* order*. Example 1: Input: changed = [1,3,4,2,6,8] Output:[1,3,4] Explanation: One possible original array could be [1,3,4]:
+
+Twice the value of 1 is 1 * 2 = 2.
+Twice the value of 3 is 3 * 2 = 6.
+Twice the value of 4 is 4 * 2 = 8.
+Other original arrays could be [4,3,1] or [3,1,4].
+
+Algorithm
+1.Create a copy of the changed array and sort it in non-decreasing order. Let's call it sorted_changed. 2.Create an empty dictionary called count. 3.Iterate over each element num in sorted_changed. If num is not in the count dictionary, add it with a value of 1. If num is already in the count dictionary, increment its value by 1. 4.Iterate over each element num in sorted_changed again. If num is positive and num * 2 is in the count dictionary and its value is greater than 0, decrement its value by 1. Otherwise, return an empty array. 5.Create an empty list called original. 6.Iterate over each element num in changed. If num is in the count dictionary and its value is greater than 0, append num to original and decrement its value by 1. If num is not in the count dictionary or its value is 0, return an empty array. 7.Return the original list.
+
+def findOriginalArray(changed):
+    sorted_changed = sorted(changed)
+    count = {}
+    
+    for num in sorted_changed:
+        if num not in count:
+            count[num] = 1
+        else:
+            count[num] += 1
+    
+    original = []
+    for num in sorted_changed:
+        if num % 2 == 0 and count.get(num // 2, 0) > 0 and count.get(num, 0) > 0:
+            original.append(num // 2)
+            count[num // 2] -= 1
+            count[num] -= 1
+    
+    if len(original) != len(changed) // 2:
+        return []
+    
+    return original
+changed = [1, 3, 4, 2, 6, 8]
+result = findOriginalArray(changed)
+print(result)
+[1, 3, 4]
+Question 7
+Given a positive integer n, generate an n x n matrix filled with elements from 1 to n2 in spiral order.
+Example 1: Input: n = 3 Output: [[1,2,3],[8,9,4],[7,6,5]]
+
+Algorithm
+1.Create an empty matrix of size n x n filled with zeros. 2.Initialize variables: num as 1, which represents the current number to be filled in the matrix. row_start as 0, which represents the starting row index. row_end as n - 1, which represents the ending row index. col_start as 0, which represents the starting column index. col_end as n - 1, which represents the ending column index. 3.Use a while loop with the condition num <= n * n. 4.Fill the top row from col_start to col_end with the numbers num to num + (col_end - col_start). Increment num by col_end - col_start + 1. Increment row_start by 1 to move to the next row. 5.Fill the right column from row_start to row_end with the numbers num to num + (row_end - row_start). Increment num by row_end - row_start + 1. Decrement col_end by 1 to move to the previous column. 6.Fill the bottom row from col_end to col_start with the numbers num to num - (col_end - col_start). Increment num by col_start - col_end - 1. Decrement row_end by 1 to move to the previous row. 7.Fill the left column from row_end to row_start with the numbers num to num - (row_end - row_start). Increment num by row_start - row_end - 1. Increment col_start by 1 to move to the next column. 8.After the while loop ends, return the generated matrix.
+
+def generateMatrix(n):
+    matrix = [[0] * n for _ in range(n)]
+    num = 1
+    row_start, row_end = 0, n - 1
+    col_start, col_end = 0, n - 1
+    
+    while num <= n * n:
+        for i in range(col_start, col_end + 1):
+            matrix[row_start][i] = num
+            num += 1
+        row_start += 1
+        
+        for i in range(row_start, row_end + 1):
+            matrix[i][col_end] = num
+            num += 1
+        col_end -= 1
+        
+        for i in range(col_end, col_start - 1, -1):
+            matrix[row_end][i] = num
+            num += 1
+        row_end -= 1
+        
+        for i in range(row_end, row_start - 1, -1):
+            matrix[i][col_start] = num
+            num += 1
+        col_start += 1
+    
+    return matrix
+n = 3
+result = generateMatrix(n)
+print(result)
+[[1, 2, 3], [8, 9, 4], [7, 6, 5]]
+Question 8
+Given two sparse matrices mat1 of size m x k and mat2 of size k x n, return the result of mat1 x mat2. You may assume that multiplication is always possible.
+Example 1: Input: mat1 = [[1,0,0],[-1,0,3]], mat2 = [[7,0,0],[0,0,0],[0,0,1]] Output:[[7,0,0],[-7,0,3]]
+
+Algorithm
+1.Initialize variables m, k, and n to store the dimensions of the matrices. m represents the number of rows in mat1. k represents the number of columns in mat1 and the number of rows in mat2. n represents the number of columns in mat2. 2.Create an empty result matrix result of size m x n filled with zeros. 3.Iterate over the rows of mat1 using index i: Iterate over the columns of mat2 using index j: Initialize a variable dot_product to store the dot product of the current row from mat1 and column from mat2. Iterate over the range k and calculate the dot product: Increment dot_product by mat1[i][p] * mat2[p][j]. Assign the calculated dot_product to result[i][j]. 4.Return the resulting matrix result.
+
+def multiply(mat1, mat2):
+    m = len(mat1)
+    k = len(mat1[0])
+    n = len(mat2[0])
+    result = [[0] * n for _ in range(m)]
+    
+    for i in range(m):
+        for j in range(n):
+            dot_product = 0
+            for p in range(k):
+                dot_product += mat1[i][p] * mat2[p][j]
+            result[i][j] = dot_product
+    
+    return result
+mat1 = [[1, 0, 0], [-1, 0, 3]]
+mat2 = [[7, 0, 0], [0, 0, 0], [0, 0, 1]]
+result = multiply(mat1, mat2)
+print(result)
+[[7, 0, 0], [-7, 0, 3]]
+ 
+ 

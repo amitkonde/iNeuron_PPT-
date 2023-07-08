@@ -1,0 +1,564 @@
+Question 1
+Roman numerals are represented by seven different symbols: I, V, X, L, C, D and M.
+SymbolValue
+I             1
+V             5
+X             10
+L             50
+C             100
+D             500
+M             1000
+For example, 2 is written as II in Roman numeral, just two ones added together. 12 is written as XII, which is simply X + II. The number 27 is written as XXVII, which is XX + V + II.
+
+Roman numerals are usually written largest to smallest from left to right. However, the numeral for four is not IIII. Instead, the number four is written as IV. Because the one is before the five we subtract it making four. The same principle applies to the number nine, which is written as IX. There are six instances where subtraction is used:
+
+I can be placed before V (5) and X (10) to make 4 and 9.
+X can be placed before L (50) and C (100) to make 40 and 90.
+C can be placed before D (500) and M (1000) to make 400 and 900.
+Given a roman numeral, convert it to an integer.
+
+Example 1:
+
+Input: s = "III"
+Output: 3
+Explanation: III = 3.
+Example 2:
+
+Input: s = "LVIII"
+Output: 58
+Explanation: L = 50, V= 5, III = 3.
+Constraints:
+
+1 <= s.length <= 15
+s contains only the characters ('I', 'V', 'X', 'L', 'C', 'D', 'M').
+It is guaranteed that s is a valid roman numeral in the range [1, 3999].
+Algorithm:
+Create a dictionary symbol_value to store the mapping of Roman symbols to their respective values.
+
+Initialize the variable result to 0, which will store the final integer value.
+
+Iterate over the input Roman numeral string s from right to left:
+
+Initialize the variable current_value with the value of the current symbol.
+
+If current_value is less than the value of the next symbol (if it exists) and the current symbol is not the last symbol in the string, subtract current_value from result. Otherwise, add current_value to result.
+
+Return the final value of result.
+
+def romanToInt(s):
+    symbol_value = {
+        'I': 1,
+        'V': 5,
+        'X': 10,
+        'L': 50,
+        'C': 100,
+        'D': 500,
+        'M': 1000
+    }
+
+    result = 0
+    n = len(s)
+
+    for i in range(n - 1, -1, -1):
+        current_value = symbol_value[s[i]]
+
+        if i < n - 1 and current_value < symbol_value[s[i + 1]]:
+            result -= current_value
+        else:
+            result += current_value
+
+    return result
+
+
+
+s1 = "III"
+print(romanToInt(s1)): 3
+s2 = "LVIII"
+print(romanToInt(s2)): 58
+3
+58
+Question 2
+Longest Substring Without Repeating Characters
+Given a string s, find the length of the longest substring without repeating characters.
+
+Example 1:
+
+Input: s = "abcabcbb"
+Output: 3
+Explanation: The answer is "abc", with the length of 3.
+Example 2:
+
+Input: s = "bbbbb"
+Output: 1
+Explanation: The answer is "b", with the length of 1.
+Example 3:
+
+Input: s = "pwwkew"
+Output: 3
+Explanation: The answer is "wke", with the length of 3.
+Notice that the answer must be a substring, "pwke" is a subsequence and not a substring.
+Constraints:
+
+0 <= s.length <= 50000
+s consists of English letters, digits, symbols and spaces.
+Algorithm:
+Initialize variables start and end to represent the start and end indices of the current substring, and initialize max_length to 0 to store the maximum length.
+
+Create an empty set seen to store the characters that have been seen in the current substring.
+
+Iterate over the characters in the input string s using a sliding window approach:
+
+If the current character s[end] is not in seen, add it to seen and update end and max_length.
+
+If the current character s[end] is already in seen, remove the character at start from seen, increment start, and continue the iteration.
+
+Return max_length as the length of the longest substring without repeating characters.
+
+def lengthOfLongestSubstring(s):
+    start = 0
+    end = 0
+    max_length = 0
+    seen = set()
+
+    while end < len(s):
+        if s[end] not in seen:
+            seen.add(s[end])
+            end += 1
+            max_length = max(max_length, end - start)
+        else:
+            seen.remove(s[start])
+            start += 1
+
+    return max_length
+
+
+
+s1 = "abcabcbb"
+print(lengthOfLongestSubstring(s1)): 3
+
+
+s2 = "bbbbb"
+print(lengthOfLongestSubstring(s2)): 1
+
+
+s3 = "pwwkew"
+print(lengthOfLongestSubstring(s3)): 3
+3
+1
+3
+Question 3
+Majority Element
+Given an array nums of size n, return the majority element.
+
+The majority element is the element that appears more than ⌊n / 2⌋ times. You may assume that the majority element always exists in the array.
+
+Example 1:
+
+Input: nums = [3,2,3]
+Output: 3
+Example 2:
+
+Input: nums = [2,2,1,1,1,2,2]
+Output: 2
+Constraints:
+
+n == nums.length
+1 <= n <= 5 * 10^4
+-10^9 <= nums[i] <= 10^9
+Algorithm:
+Initialize a variable count to 0 and majority to None.
+
+Iterate over each element num in the array nums:
+
+If count is 0, set num as the current potential majority element and increment count by 1.
+
+If num is equal to the current potential majority element, increment count by 1.
+
+If num is not equal to the current potential majority element, decrement count by 1.
+
+After the iteration, the majority variable will hold the potential majority element.
+
+Iterate over the array nums again to count the occurrences of the majority element.
+
+If the count of the majority element is greater than n / 2, return the majority element as the majority element.
+
+If no majority element is found, return None.
+
+def majorityElement(nums):
+    count = 0
+    majority = None
+
+    for num in nums:
+        if count == 0:
+            majority = num
+            count += 1
+        elif num == majority:
+            count += 1
+        else:
+            count -= 1
+
+    count_majority = 0
+    for num in nums:
+        if num == majority:
+            count_majority += 1
+
+    if count_majority > len(nums) // 2:
+        return majority
+    else:
+        return None
+
+
+nums1 = [3, 2, 3]
+print(majorityElement(nums1)): 3
+
+nums2 = [2, 2, 1, 1, 1, 2, 2]
+print(majorityElement(nums2)): 2
+3
+2
+Question 4
+Group Anagram
+Given an array of strings strs, group the anagrams together. You can return the answer in any order.
+
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+Example 1:
+
+Input: strs = ["eat","tea","tan","ate","nat","bat"]
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+Example 2:
+
+Input: strs = [""]
+Output: [[""]]
+Example 3:
+
+Input: strs = ["a"]
+Output: [["a"]]
+Constraints:
+
+1 <= strs.length <= 10000
+0 <= strs[i].length <= 100
+strs[i] consists of lowercase English letters.
+Algorithm:
+Create an empty dictionary anagram_groups to store the groups of anagrams.
+
+Iterate over each string str in the input array strs:
+
+Sort the characters of str and use it as a key to group anagrams together.
+
+If the sorted string key is not present in anagram_groups, add it as a new key with an empty list as its value.
+
+ppend the original string str to the corresponding anagram group in anagram_groups.
+
+Convert the values of anagram_groups dictionary to a list and return the result.
+
+from collections import defaultdict
+
+def groupAnagrams(strs):
+    anagram_groups = defaultdict(list)
+
+    for string in strs:
+        key = "".join(sorted(string))
+        anagram_groups[key].append(string)
+
+    return list(anagram_groups.values())
+
+
+
+strs1 = ["eat", "tea", "tan", "ate", "nat", "bat"]
+print(groupAnagrams(strs1)): [["eat","tea","ate"],["tan","nat"],["bat"]]
+
+
+strs2 = [""]
+print(groupAnagrams(strs2)): [[""]]
+
+
+strs3 = ["a"]
+print(groupAnagrams(strs3)): [["a"]]
+[['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]
+[['']]
+[['a']]
+Question 5
+Ugly Numbers
+An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+
+Given an integer n, return the nth *ugly number*.
+
+Example 1:
+
+Input: n = 10
+Output: 12
+Explanation: [1, 2, 3, 4, 5, 6, 8, 9, 10, 12] is the sequence of the first 10 ugly numbers.
+Example 2:
+
+Input: n = 1
+Output: 1
+Explanation: 1 has no prime factors, therefore all of its prime factors are limited to 2, 3, and 5.
+Constraints:
+
+1 <= n <= 1690
+Algorithm:
+Initialize three pointers p2, p3, and p5 to track the indices of the current ugly number multiplied by 2, 3, and 5, respectively. Set their initial values to 0.
+
+Create an array ugly and initialize it with the first ugly number, which is 1.
+
+Iterate n-1 times (since we already have the first ugly number):
+
+Calculate the next ugly number as the minimum of ugly[p2] * 2, ugly[p3] * 3, and ugly[p5] * 5.
+
+If the next ugly number is equal to ugly[p2] * 2, increment p2.
+
+If the next ugly number is equal to ugly[p3] * 3, increment p3.
+
+If the next ugly number is equal to ugly[p5] * 5, increment p5.
+
+Append the next ugly number to the ugly array.
+
+Return the last element in the ugly array, which is the nth ugly number.
+
+def nthUglyNumber(n):
+    ugly = [1]
+    p2 = p3 = p5 = 0
+
+    for _ in range(n - 1):
+        next_ugly = min(ugly[p2] * 2, ugly[p3] * 3, ugly[p5] * 5)
+        ugly.append(next_ugly)
+
+        if next_ugly == ugly[p2] * 2:
+            p2 += 1
+        if next_ugly == ugly[p3] * 3:
+            p3 += 1
+        if next_ugly == ugly[p5] * 5:
+            p5 += 1
+
+    return ugly[-1]
+
+
+
+n1 = 10
+print(nthUglyNumber(n1)): 12
+
+
+n2 = 1
+print(nthUglyNumber(n2)): 1
+12
+1
+Question 6
+Top K Frequent Words
+Given an array of strings words and an integer k, return the k most frequent strings.
+
+Return the answer sorted by the frequency from highest to lowest. Sort the words with the same frequency by their lexicographical order.
+
+Example 1:
+
+Input: words = ["i","love","leetcode","i","love","coding"], k = 2
+Output: ["i","love"]
+Explanation: "i" and "love" are the two most frequent words.
+Note that "i" comes before "love" due to a lower alphabetical order.
+Example 2:
+
+Input: words = ["the","day","is","sunny","the","the","the","sunny","is","is"], k = 4
+Output: ["the","is","sunny","day"]
+Explanation: "the", "is", "sunny" and "day" are the four most frequent words, with the number of occurrence being 4, 3, 2 and 1 respectively.
+Constraints:
+
+1 <= words.length <= 500
+1 <= words[i].length <= 10
+words[i] consists of lowercase English letters.
+k is in the range [1, The number of **unique** words[i]]
+Algorithm:
+Create a frequency dictionary freq to store the frequency count of each word.
+
+Iterate through each word in the words array and update its count in the freq dictionary.
+
+Create a list of tuples word_freq to store the word-frequency pairs from the freq dictionary.
+
+Sort the word_freq list based on the following criteria:
+
+Sort by frequency in descending order.
+
+If two words have the same frequency, sort them lexicographically in ascending order.
+
+Return the first k words from the sorted word_freq list.
+
+import heapq
+from collections import Counter
+
+def topKFrequent(words, k):
+    freq = Counter(words)
+    word_freq = [(-count, word) for word, count in freq.items()]
+    heapq.heapify(word_freq)
+    return [heapq.heappop(word_freq)[1] for _ in range(k)]
+
+words1 = ["i", "love", "leetcode", "i", "love", "coding"]
+k1 = 2
+print(topKFrequent(words1, k1)): ["i", "love"]
+
+words2 = ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"]
+k2 = 4
+print(topKFrequent(words2, k2)) : ["the", "is", "sunny", "day"]
+['i', 'love']
+['the', 'is', 'sunny', 'day']
+Question 7
+Sliding Window Maximum
+You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.
+
+Return the max sliding window.
+
+Example 1:
+
+Input: nums = [1,3,-1,-3,5,3,6,7], k = 3
+Output: [3,3,5,5,6,7]
+Explanation:
+Window position                Max
+---------------               -----
+[1  3  -1] -3  5  3  6 7         3
+ 1 [3  -1  -3] 5  3  6 7         3
+ 1  3 [-1  -3  5] 3  6 7         5
+ 1  3  -1 [-3  5  3] 6 7         5
+ 1  3  -1  -3 [5  3  6]7         6
+ 1  3  -1  -3  5 [3  6  7]       7
+Example 2:
+
+Input: nums = [1], k = 1
+Output: [1]
+Constraints:
+
+1 <= nums.length <= 100000
+-10000 <= nums[i] <= 10000
+1 <= k <= nums.length
+Algorithm:
+Initialize an empty list result to store the maximum elements in each sliding window.
+
+Initialize an empty deque window to store the indices of the elements in the current window.
+
+Iterate through the elements in the nums array:
+
+Remove the indices from the front of the window that are no longer within the current window (i.e., indices that are smaller than i - k + 1).
+
+Remove the indices from the back of the window that are smaller than the current element in nums.
+
+Append the current index i to the window.
+
+If i is greater than or equal to k - 1, add the maximum element from nums at the index window[0] to the result.
+
+Return the result list.
+
+from collections import deque
+
+def maxSlidingWindow(nums, k):
+    result = []
+    window = deque()
+    
+    for i in range(len(nums)):
+        # Remove indices from the front of the window
+        if window and window[0] <= i - k:
+            window.popleft()
+        
+        # Remove indices from the back of the window
+        while window and nums[window[-1]] < nums[i]:
+            window.pop()
+        
+        # Append current index to the window
+        window.append(i)
+        
+        # Add maximum element to the result
+        if i >= k - 1:
+            result.append(nums[window[0]])
+    
+    return result
+
+nums1 = [1, 3, -1, -3, 5, 3, 6, 7]
+k1 = 3
+print(maxSlidingWindow(nums1, k1)): [3, 3, 5, 5, 6, 7]
+
+nums2 = [1]
+k2 = 1
+print(maxSlidingWindow(nums2, k2)): [1]
+[3, 3, 5, 5, 6, 7]
+[1]
+Question 8
+Find K Closest Elements
+Given a sorted integer array arr, two integers k and x, return the k closest integers to x in the array. The result should also be sorted in ascending order.
+
+An integer a is closer to x than an integer b if:
+
+|a - x| < |b - x|, or
+|a - x| == |b - x| and a < b
+Example 1:
+
+Input: arr = [1,2,3,4,5], k = 4, x = 3
+Output: [1,2,3,4]
+Example 2:
+
+Input: arr = [1,2,3,4,5], k = 4, x = -1
+Output: [1,2,3,4]
+Constraints:
+
+1 <= k <= arr.length
+1 <= arr.length <= 10000
+arr is sorted in ascending order.
+-10000 <= arr[i], x <= 10000
+Algorithm:
+Initialize two pointers left and right. left points to the start of the array and right points to the end of the array.
+
+Perform a binary search to find the index idx of the element in the array that is closest to x.
+
+Initialize left as 0 and right as the length of arr minus 1.
+
+While left is less than right, do the following:
+
+Calculate the middle index as mid = (left + right) // 2.
+
+If arr[mid] is greater than or equal to x, set right to mid.
+
+Otherwise, set left to mid + 1.
+
+After the binary search, left and right will converge to the index of the element in arr that is closest to x. Set idx as left.
+
+Initialize two pointers left and right for the k closest elements.
+
+Set left as idx - k and right as idx + k.
+
+Adjust the pointers left and right to keep the window of k elements closest to x.
+
+While the difference between x and arr[left] is greater than the difference between x and arr[right], decrement left by 1.
+
+Otherwise, increment right by 1.
+
+Return the sublist of arr from index left to index right.
+
+def findClosestElements(arr, k, x):
+    left = 0
+    right = len(arr) - 1
+
+    # Binary search to find the index of the closest element to x
+    while left < right:
+        mid = (left + right) // 2
+        if arr[mid] >= x:
+            right = mid
+        else:
+            left = mid + 1
+
+    idx = left
+
+    # Set the window of k closest elements
+    left = max(0, idx - k)
+    right = min(len(arr) - 1, idx + k)
+
+    # Adjust the window to keep the k closest elements
+    while right - left + 1 > k:
+        if x - arr[left] <= arr[right] - x:
+            right -= 1
+        else:
+            left += 1
+
+    return arr[left:right+1]
+
+
+
+arr = [1, 2, 3, 4, 5]
+k = 4
+x = 3
+print(findClosestElements(arr, k, x)): [1, 2, 3, 4]
+[1, 2, 3, 4]
+ 

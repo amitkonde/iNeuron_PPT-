@@ -1,0 +1,209 @@
+Question 1
+Given three integer arrays arr1, arr2 and arr3 sorted in strictly increasing order, return a sorted array of only the integers that appeared in all three arrays.
+Example 1: Input: arr1 = [1,2,3,4,5], arr2 = [1,2,5,7,9], arr3 = [1,3,4,5,8]
+
+Output: [1,5]
+
+Algorithm
+Initialize three pointers, p1, p2, and p3, to track the current positions in arr1, arr2, and arr3, respectively. Set them to 0 initially.
+Initialize an empty list, result, to store the common integers.
+While p1, p2, and p3 are within the bounds of their respective arrays: If arr1[p1], arr2[p2], and arr3[p3] are equal, add the integer to result, and increment all pointers (p1, p2, p3) by 1. If arr1[p1] is smaller than either arr2[p2] or arr3[p3], increment p1 by 1. If arr2[p2] is smaller than either arr1[p1] or arr3[p3], increment p2 by 1. If arr3[p3] is smaller than either arr1[p1] or arr2[p2], increment p3 by 1.
+Return result, which will contain the sorted integers that appeared in all three arrays.
+def commonElements(arr1, arr2, arr3):
+    p1, p2, p3 = 0, 0, 0
+    result = []
+
+    while p1 < len(arr1) and p2 < len(arr2) and p3 < len(arr3):
+        if arr1[p1] == arr2[p2] == arr3[p3]:
+            result.append(arr1[p1])
+            p1 += 1
+            p2 += 1
+            p3 += 1
+        elif arr1[p1] < arr2[p2] or arr1[p1] < arr3[p3]:
+            p1 += 1
+        elif arr2[p2] < arr1[p1] or arr2[p2] < arr3[p3]:
+            p2 += 1
+        else:
+            p3 += 1
+
+    return result
+arr1 = [1, 2, 3, 4, 5]
+arr2 = [1, 2, 5, 7, 9]
+arr3 = [1, 3, 4, 5, 8]
+
+print(commonElements(arr1, arr2, arr3))
+[1, 5]
+Question 2
+Given two 0-indexed integer arrays nums1 and nums2, return a list answer of size 2 where: answer[0] is a list of all distinct* integers in* nums1 which are not* present in* nums2.
+Note that the integers in the lists may be returned in any order. Example 1: Input: nums1 = [1,2,3], nums2 = [2,4,6] Output: [[1,3],[4,6]]
+
+Algorithm
+1.Convert nums1 and nums2 into sets to remove duplicates.
+2. Initialize an empty list, result, to store the distinct integers.
+3. Iterate over each element in nums1 and check if it exists in the set of nums2. If it doesn't, add it to result.
+4. Iterate over each element in nums2 and check if it exists in the set of nums1. If it doesn't, add it to result.
+5. Return result as a list of two lists, where the first list contains the distinct integers from nums1 not present in nums2, and the second list contains the distinct integers from nums2 not present in nums1.
+def distinctIntegers(nums1, nums2):
+    set_nums1 = set(nums1)
+    set_nums2 = set(nums2)
+    result = []
+    distinct_nums1 = [num for num in nums1 if num not in set_nums2]
+    distinct_nums2 = [num for num in nums2 if num not in set_nums1]
+    result.append(distinct_nums1)
+    result.append(distinct_nums2)
+    return result
+nums1 = [1, 2, 3]
+nums2 = [2, 4, 6]
+print(distinctIntegers(nums1, nums2))
+[[1, 3], [4, 6]]
+Question 3
+Given a 2D integer array matrix, return the transpose of matrix.
+The transpose of a matrix is the matrix flipped over its main diagonal, switching the matrix's row and column indices. Example 1: Input: matrix = [[1,2,3],[4,5,6],[7,8,9]] Output: [[1,4,7],[2,5,8],[3,6,9]]
+
+Algorithm
+1. Initialize an empty 2D list, transpose, to store the transposed matrix.
+2. Iterate over the columns of the matrix using a nested loop.
+    For each column, iterate over the rows.
+    Append the element at the current row and column to the transpose list at the corresponding column and row.
+3. Return the transpose list.
+def transposeMatrix(matrix):
+    transpose = []
+    rows = len(matrix)
+    columns = len(matrix[0])
+    for col in range(columns):
+        transposed_row = []
+        for row in range(rows):
+            transposed_row.append(matrix[row][col])
+        transpose.append(transposed_row)
+
+    return transpose
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+print(transposeMatrix(matrix))
+[[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+Question 4
+Given an integer array nums of 2n integers, group these integers into n pairs (a1, b1), (a2, b2), ..., (an, bn) such that the sum of min(ai, bi) for all i is maximized. Return the maximized sum.
+Example 1: Input: nums = [1,4,3,2] Output: 4
+
+Algorithm
+Sort the given array nums in ascending order.
+Initialize a variable max_sum to keep track of the maximized sum.
+Iterate over the sorted array nums by incrementing the index by 2 in each iteration. Add the minimum value between nums[i] and nums[i+1] to max_sum.
+Return max_sum.
+def arrayPairSum(nums):
+    nums.sort()
+    max_sum = 0
+    for i in range(0, len(nums), 2):
+        max_sum += min(nums[i], nums[i+1])
+    return max_sum
+nums = [1, 4, 3, 2]
+print(arrayPairSum(nums))
+4
+Question 5
+You have n coins and you want to build a staircase with these coins. The staircase consists of k rows where the ith row has exactly i coins. The last row of the staircase may be incomplete.
+Given the integer n, return the number of complete rows of the staircase you will build. 1 1 1 1 1 *
+
+Example 1:
+
+Input: n = 5 output : 2 Explanation: Because the 3rd row is incomplete, we return 2.
+
+Algorithm
+Initialize the variables left and right to 1 and n respectively. These variables define the search range.
+While left is less than or equal to right, perform the following steps: Calculate the midpoint using mid = left + (right - left) // 2. Calculate the sum of the arithmetic series up to mid using the formula sum = (mid * (mid + 1)) // 2. If sum is less than or equal to n, update left to mid + 1. Otherwise, update right to mid - 1.
+Return left - 1.
+def arrangeCoins(n):
+    left = 1
+    right = n
+
+    while left <= right:
+        mid = left + (right - left) // 2
+        curr_sum = (mid * (mid + 1)) // 2
+
+        if curr_sum <= n:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return left - 1
+n = 5
+print(arrangeCoins(n))
+2
+Question 6
+Given an integer array nums sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.
+Example 1: Input: nums = [-4,-1,0,3,10] Output: [0,1,9,16,100]
+
+Algorithm
+Initialize an empty list, result, to store the squared values.
+Use two pointers, left and right, initially pointing to the start and end of the nums array.
+Iterate from right to left, comparing the absolute values of nums[left] and nums[right]. If the absolute value of nums[left] is greater than or equal to the absolute value of nums[right], append the square of nums[left] to result and move the left pointer one step to the right. Otherwise, append the square of nums[right] to result and move the right pointer one step to the left.
+Reverse the result list to obtain the non-decreasing order of squared values.
+Return result.
+def sortedSquares(nums):
+    result = []
+    left = 0
+    right = len(nums) - 1
+
+    while left <= right:
+        if abs(nums[left]) >= abs(nums[right]):
+            result.append(nums[left] ** 2)
+            left += 1
+        else:
+            result.append(nums[right] ** 2)
+            right -= 1
+
+    return result[::-1]
+nums = [-4, -1, 0, 3, 10]
+print(sortedSquares(nums))
+[0, 1, 9, 16, 100]
+Question 7
+You are given an m x n matrix M initialized with all 0's and an array of operations ops, where ops[i] = [ai, bi] means M[x][y] should be incremented by one for all 0 <= x < ai and 0 <= y < bi.
+Count and return the number of maximum integers in the matrix after performing all the operations
+
+Example 1:
+
+Input: m = 3, n = 3, ops = [[2,2],[3,3]]
+
+Output: 4
+
+Explanation: The maximum integer in M is 2, and there are four of it in M. So return 4.
+
+Algorithm
+1.Initialize max_row and max_col variables with m and n respectively. These variables represent the maximum row and column indices affected by the operations.
+2.Iterate through each operation [ai, bi] in the ops array.
+    Update max_row as the minimum value between max_row and ai.
+    Update max_col as the minimum value between max_col and bi.
+3.Return the product of max_row and max_col, which represents the number of maximum integers in the matrix.
+def maxCount(m, n, ops):
+    max_row = m
+    max_col = n
+
+    for op in ops:
+        max_row = min(max_row, op[0])
+        max_col = min(max_col, op[1])
+    return max_row * max_col
+m = 3
+n = 3
+ops = [[2, 2], [3, 3]]
+print(maxCount(m, n, ops))
+4
+Question 8
+Given the array nums consisting of 2n elements in the form [x1,x2,...,xn,y1,y2,...,yn].
+Return the array in the form [x1,y1,x2,y2,...,xn,yn]. example 1: Input: nums = [2,5,1,3,4,7], n = 3 Output: [2,3,5,4,1,7] Explanation: Since x1=2, x2=5, x3=1, y1=3, y2=4, y3=7 then the answer is [2,3,5,4,1,7].
+
+Algorithm
+1.Split the array nums into two halves: the first n elements represent the x values, and the remaining n elements represent the y values.
+2.Initialize an empty list, result, to store the rearranged array.
+3.Iterate over the range from 0 to n and for each index i, do the following:
+    Append the i-th x value to result.
+    Append the i-th y value to result.
+4.Return result.
+def shuffle(nums, n):
+    result = []
+    for i in range(n):
+        result.append(nums[i])
+        result.append(nums[i + n])
+    return result
+nums = [2, 5, 1, 3, 4, 7]
+n = 3
+print(shuffle(nums, n))
+[2, 3, 5, 4, 1, 7]
+ 

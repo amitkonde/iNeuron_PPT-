@@ -1,0 +1,693 @@
+Question 1
+Given two linked list of the same size, the task is to create a new linked list using those linked lists. The condition is that the greater node among both linked list will be added to the new linked list.
+Examples: Input: list1 = 5->2->3->8 list2 = 1->7->4->5 Output: New list = 5->7->4->8
+
+Input:list1 = 2->8->9->3 list2 = 5->3->6->4 Output: New list = 5->8->9->4
+
+Algorithm
+1.Initialize a dummy node as the head of the new linked list.
+
+2.Initialize two pointers, ptr1 and ptr2, pointing to the heads of the input linked lists list1 and list2, respectively.
+
+3.Initialize a current pointer curr to point to the dummy node.
+
+4.While both ptr1 and ptr2 are not None:
+
+5.Compare the values of ptr1 and ptr2.
+
+6.If the value of ptr1 is greater or equal to the value of ptr2, create a new node with the value of ptr1 and assign it to the next of curr. Move ptr1 to the next node.
+
+7.Otherwise, create a new node with the value of ptr2 and assign it to the next of curr. Move ptr2 to the next node.
+
+8.Move curr to its next node.
+
+9.If ptr1 is not None, append the remaining nodes of list1 to the new linked list by assigning the next of curr to ptr1.
+
+10.If ptr2 is not None, append the remaining nodes of list2 to the new linked list by assigning the next of curr to ptr2.
+
+11.Return the next of the dummy node as the head of the new linked list.
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def createNewList(list1, list2):
+    dummy = ListNode()  # Dummy node to simplify the insertion
+    curr = dummy
+
+    while list1 and list2:
+        if list1.val >= list2.val:
+            curr.next = ListNode(list1.val)
+            list1 = list1.next
+        else:
+            curr.next = ListNode(list2.val)
+            list2 = list2.next
+
+        curr = curr.next
+
+    # Append the remaining nodes from list1 or list2 if any
+    if list1:
+        curr.next = list1
+    elif list2:
+        curr.next = list2
+
+    return dummy.next
+list1 = ListNode(5)
+list1.next = ListNode(2)
+list1.next.next = ListNode(3)
+list1.next.next.next = ListNode(8)
+
+list2 = ListNode(1)
+list2.next = ListNode(7)
+list2.next.next = ListNode(4)
+list2.next.next.next = ListNode(5)
+
+newList = createNewList(list1, list2)
+
+while newList:
+    print(newList.val, end=' ')
+    newList = newList.next
+5 2 3 8 1 7 4 5 
+Question 2
+Write a function that takes a list sorted in non-decreasing order and deletes any duplicate nodes from the list. The list should only be traversed once.
+For example if the linked list is 11->11->11->21->43->43->60 then removeDuplicates() should convert the list to 11->21->43->60.
+
+Example 1: Input: LinkedList: 11->11->11->21->43->43->60 Output: 11->21->43->60 Example 2: Input: LinkedList: 10->12->12->25->25->25->34 Output: 10->12->25->34
+
+Algorithm
+1.If the input linked list is empty or has only one node, return the list as it is since there are no duplicates.
+
+2.Initialize a pointer current to point to the head of the linked list.
+
+3.Iterate through the list using a while loop until the current node and its next node are not None:
+
+4.If the value of the current node and its next node are equal, skip the next node by updating the next of the current node to the next of the next node. This effectively removes the duplicate node from the list.
+
+5.If the value of the current node and its next node are not equal, move the current pointer to the next node.
+
+6.Return the modified linked list.
+
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.next = None
+
+# Function to remove duplicates from a sorted linked list
+def removeDuplicates(head):
+    # If the list is empty or has only one node
+    if head is None or head.next is None:
+        return head
+
+    current = head
+
+    # Traverse the list
+    while current is not None and current.next is not None:
+        if current.data == current.next.data:
+            current.next = current.next.next
+        else:
+            current = current.next
+
+    return head
+
+# Create a sorted linked list with duplicate nodes
+head = Node(11)
+head.next = Node(11)
+head.next.next = Node(11)
+head.next.next.next = Node(21)
+head.next.next.next.next = Node(43)
+head.next.next.next.next.next = Node(43)
+head.next.next.next.next.next.next = Node(60)
+
+# Print the original linked list
+current = head
+print("Original Linked List: ", end="")
+while current is not None:
+    print(current.data, end="->")
+    current = current.next
+print("None")
+
+# Remove duplicates from the linked list
+head = removeDuplicates(head)
+
+# Print the modified linked list after removing duplicates
+current = head
+print("Modified Linked List: ", end="")
+while current is not None:
+    print(current.data, end="->")
+    current = current.next
+print("None")
+Original Linked List: 11->11->11->21->43->43->60->None
+Modified Linked List: 11->21->43->60->None
+Question 3
+Given a linked list of size N. The task is to reverse every k nodes (where k is an input to the function) in the linked list. If the number of nodes is not a multiple of k then left-out nodes, in the end, should be considered as a group and must be reversed (See Example 2 for clarification).
+Example 1: Input: LinkedList: 1->2->2->4->5->6->7->8 K = 4 Output:4 2 2 1 8 7 6 5 Explanation: The first 4 elements 1,2,2,4 are reversed first and then the next 4 elements 5,6,7,8. Hence, the resultant linked list is 4->2->2->1->8->7->6->5. Example 2: Input: LinkedList: 1->2->3->4->5 K = 3 Output:3 2 1 5 4 Explanation: The first 3 elements are 1,2,3 are reversed first and then elements 4,5 are reversed.Hence, the resultant linked list is 3->2->1->5->4.
+
+Algorithm
+1.Define a function reverseKNodes that takes the head of the linked list and the value of k as input.
+
+2.Initialize three pointers: current to keep track of the current node, prev to keep track of the previous node, and next to keep track of the next node.
+
+3.Traverse the linked list using the current pointer. At each step, perform the following operations:
+
+4.Store the next node of current in the next pointer.
+
+5.Reverse the links between current and prev by setting current.next to prev.
+
+6.Move prev to current and current to next.
+
+7.Repeat these steps k times or until the end of the list is reached.
+
+8.After reversing the k nodes, check if there are more nodes in the list (current is not None). If there are, recursively call the reverseKNodes function on the next k nodes and update the head of the reversed list.
+
+9.Finally, return the new head of the reversed list.
+
+# Define the Node class
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.next = None
+
+# Function to reverse every k nodes in a linked list
+def reverseKNodes(head, k):
+    # Base case: If the list is empty or k is 0 or 1
+    if head is None or k <= 1:
+        return head
+
+    current = head
+    prev = None
+    count = 0
+
+    # Reverse the first k nodes
+    while current is not None and count < k:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+        count += 1
+
+    # Recursively reverse the remaining nodes
+    if current is not None:
+        head.next = reverseKNodes(current, k)
+
+    return prev
+
+# Function to print the linked list
+def printLinkedList(head):
+    current = head
+    while current is not None:
+        print(current.data, end=" ")
+        current = current.next
+    print()
+
+# Create the linked list
+head = Node(1)
+head.next = Node(2)
+head.next.next = Node(2)
+head.next.next.next = Node(4)
+head.next.next.next.next = Node(5)
+head.next.next.next.next.next = Node(6)
+head.next.next.next.next.next.next = Node(7)
+head.next.next.next.next.next.next.next = Node(8)
+
+# Print the original linked list
+print("Original Linked List:")
+printLinkedList(head)
+
+# Reverse every 4 nodes in the linked list
+k = 4
+head = reverseKNodes(head, k)
+
+# Print the reversed linked list
+print("Reversed Linked List:")
+printLinkedList(head)
+Original Linked List:
+1 2 2 4 5 6 7 8 
+Reversed Linked List:
+4 2 2 1 8 7 6 5 
+Question 4
+Given a linked list, write a function to reverse every alternate k nodes (where k is an input to the function) in an efficient way. Give the complexity of your algorithm.
+Example:
+
+Inputs: 1->2->3->4->5->6->7->8->9->NULL and k = 3 Output: 3->2->1->4->5->6->9->8->7->NULL.
+
+Algorithm
+1.Define a function reverseAlternateKNodes that takes the head of the linked list and the value of k as input.
+
+2.Initialize three pointers: current to keep track of the current node, prev to keep track of the previous node, and next to keep track of the next node.
+
+3.Traverse the linked list using the current pointer. At each step, perform the following operations:
+
+4.Store the next node of current in the next pointer.
+
+5.Reverse the links between current and prev by setting current.next to prev.
+
+6.Move prev to current and current to next.
+
+7.Repeat these steps k times or until the end of the list is reached.
+
+8.After reversing the k nodes, check if there are more nodes in the list (current is not None). If there are, skip the next k nodes by recursively calling the reverseAlternateKNodes function on the next k nodes.
+
+9.Finally, return the new head of the reversed list.
+
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.next = None
+
+# Function to reverse every alternate k nodes in a linked list
+def reverseAlternateKNodes(head, k):
+    # Base case: If the list is empty or k is 0 or 1
+    if head is None or k <= 1:
+        return head
+
+    current = head
+    prev = None
+    count = 0
+
+    # Reverse the first k nodes
+    while current is not None and count < k:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+        count += 1
+
+    # Skip the next k nodes
+    if current is not None:
+        head.next = current
+
+        for _ in range(k-1):
+            if current is None:
+                break
+            current = current.next
+
+        if current is not None:
+            current.next = reverseAlternateKNodes(current.next, k)
+
+    return prev
+
+# Function to print the linked list
+def printLinkedList(head):
+    current = head
+    while current is not None:
+        print(current.data, end=" ")
+        current = current.next
+    print()
+
+# Create the linked list
+head = Node(1)
+head.next = Node(2)
+head.next.next = Node(3)
+head.next.next.next = Node(4)
+head.next.next.next.next = Node(5)
+head.next.next.next.next.next = Node(6)
+head.next.next.next.next.next.next = Node(7)
+head.next.next.next.next.next.next.next = Node(8)
+head.next.next.next.next.next.next.next.next = Node(9)
+
+# Print the original linked list
+print("Original Linked List:")
+printLinkedList(head)
+
+# Reverse every alternate 3 nodes in the linked list
+k = 3
+head = reverseAlternateKNodes(head, k)
+
+# Print the reversed linked list
+print("Reversed Linked List:")
+printLinkedList(head)
+Original Linked List:
+1 2 3 4 5 6 7 8 9 
+Reversed Linked List:
+3 2 1 4 5 6 9 8 7 
+Question 5
+Given a linked list and a key to be deleted. Delete last occurrence of key from linked. The list may have duplicates.
+Examples:
+
+Input: 1->2->3->5->2->10, key = 2 Output: 1->2->3->5->10
+
+Algorithm
+1.Initialize two pointers, prev and last, to keep track of the previous and last occurrence of the key respectively.
+
+2.Traverse the linked list from the beginning and update the last pointer whenever the key is found.
+
+3.Keep updating the prev pointer to keep track of the previous node.
+
+4.After traversing the entire linked list, if the last pointer is None, it means the key is not found in the linked list. In this case, no deletion is required, so return the head of the linked list.
+
+5.If the last pointer is not None, it means the key is found, so delete the last occurrence of the key:
+
+6.If the last occurrence is the first node, update the head of the linked list to the next node.
+
+7.Otherwise, update the next pointer of the previous node (prev.next) to skip the last occurrence node.
+
+8.Return the modified head of the linked list.
+
+# Define the Node class
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.next = None
+
+# Function to delete the last occurrence of a key from a linked list
+def deleteLastOccurrence(head, key):
+    # Base case: If the list is empty
+    if head is None:
+        return head
+
+    # Initialize pointers
+    prev = None
+    last = None
+    current = head
+
+    # Traverse the linked list to find the last occurrence of the key
+    while current is not None:
+        if current.data == key:
+            last = current
+        current = current.next
+
+    # If the last occurrence is not found, return the original linked list
+    if last is None:
+        return head
+
+    # If the last occurrence is the first node, update the head
+    if head == last:
+        head = head.next
+    else:
+        # Update the next pointer of the previous node to skip the last occurrence
+        prev = head
+        while prev.next != last:
+            prev = prev.next
+        prev.next = last.next
+
+    return head
+
+# Function to print the linked list
+def printLinkedList(head):
+    current = head
+    while current is not None:
+        print(current.data, end=" ")
+        current = current.next
+    print()
+
+# Create the linked list
+head = Node(1)
+head.next = Node(2)
+head.next.next = Node(3)
+head.next.next.next = Node(5)
+head.next.next.next.next = Node(2)
+head.next.next.next.next.next = Node(10)
+
+# Print the original linked list
+print("Original Linked List:")
+printLinkedList(head)
+
+# Delete the last occurrence of key=2 from the linked list
+key = 2
+head = deleteLastOccurrence(head, key)
+
+# Print the modified linked list
+print("Modified Linked List:")
+printLinkedList(head)
+Original Linked List:
+1 2 3 5 2 10 
+Modified Linked List:
+1 2 3 5 10 
+Question 6
+Given two sorted linked lists consisting of N and M nodes respectively. The task is to merge both of the lists (in place) and return the head of the merged list.
+Examples:
+
+Input: a: 5->10->15, b: 2->3->20
+
+Output: 2->3->5->10->15->20
+
+Input: a: 1->1, b: 2->4
+
+Output: 1->1->2->4
+
+Algorithm
+1.Initialize a dummy node as the head of the merged list.
+
+2.Initialize two pointers, ptr1 and ptr2, to point to the current nodes of the two input lists.
+
+3.Compare the values of ptr1 and ptr2, and set the next pointer of the dummy node to the smaller value node.
+
+4.Move the pointer of the list with the smaller value (ptr1 or ptr2) to its next node.
+
+5.Move the next pointer of the dummy node to the next node as well.
+
+6.Repeat steps 3-5 until either ptr1 or ptr2 becomes None.
+
+7.Connect the remaining nodes of the non-empty list to the merged list by updating the next pointer of the dummy node.
+
+8.Return the next pointer of the dummy node as the head of the merged list.
+
+# Define the Node class
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.next = None
+
+# Function to merge two sorted linked lists
+def mergeSortedLists(head1, head2):
+    # Create a dummy node as the head of the merged list
+    dummy = Node(0)
+    current = dummy
+
+    # Compare the nodes of the two lists and merge them
+    while head1 is not None and head2 is not None:
+        if head1.data <= head2.data:
+            current.next = head1
+            head1 = head1.next
+        else:
+            current.next = head2
+            head2 = head2.next
+        current = current.next
+
+    # Connect the remaining nodes of the non-empty list to the merged list
+    if head1 is not None:
+        current.next = head1
+    if head2 is not None:
+        current.next = head2
+
+    # Return the head of the merged list
+    return dummy.next
+
+# Function to print the linked list
+def printLinkedList(head):
+    current = head
+    while current is not None:
+        print(current.data, end=" ")
+        current = current.next
+    print()
+
+# Create the first sorted linked list
+a = Node(5)
+a.next = Node(10)
+a.next.next = Node(15)
+
+# Create the second sorted linked list
+b = Node(2)
+b.next = Node(3)
+b.next.next = Node(20)
+
+# Print the original linked lists
+print("Original Lists:")
+print("List a:")
+printLinkedList(a)
+print("List b:")
+printLinkedList(b)
+
+# Merge the sorted linked lists
+merged = mergeSortedLists(a, b)
+
+# Print the merged linked list
+print("Merged List:")
+printLinkedList(merged)
+Original Lists:
+List a:
+5 10 15 
+List b:
+2 3 20 
+Merged List:
+2 3 5 10 15 20 
+Question 7
+Given a Doubly Linked List, the task is to reverse the given Doubly Linked List.
+Example:
+
+Original Linked list 10 8 4 2 Reversed Linked list 2 4 8 10
+
+Algorithm
+1.Initialize three pointers: current to point to the current node, next to point to the next node, and prev to point to the previous node. Initially, set prev as None.
+
+2.Traverse the doubly linked list using the current pointer.
+
+3.For each node, update the next pointer to point to the previous node and the prev pointer to point to the next node.
+
+4.Move the prev pointer to the current node and the current pointer to the next node.
+
+5.Repeat steps 3-4 until the current pointer becomes None.
+
+6.Update the next pointer of the original head node (which is now the tail node) to None.
+
+7.Set the head of the reversed list as the node pointed to by the prev pointer.
+
+8.Return the head of the reversed list.
+
+# Define the Node class for doubly linked list
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.prev = None
+        self.next = None
+
+# Function to reverse a doubly linked list
+def reverseDoublyLinkedList(head):
+    # Initialize pointers
+    current = head
+    prev = None
+
+    # Reverse the doubly linked list
+    while current is not None:
+        # Update next and prev pointers
+        next_node = current.next
+        current.next = prev
+        current.prev = next_node
+
+        # Move prev and current pointers
+        prev = current
+        current = next_node
+
+    # Update the next pointer of the original head node
+    head.next = None
+
+    # Set the head of the reversed list
+    head = prev
+
+    # Return the head of the reversed list
+    return head
+
+# Function to print the doubly linked list
+def printDoublyLinkedList(head):
+    current = head
+    while current is not None:
+        print(current.data, end=" ")
+        current = current.next
+    print()
+
+# Create the doubly linked list
+head = Node(10)
+head.next = Node(8)
+head.next.prev = head
+head.next.next = Node(4)
+head.next.next.prev = head.next
+head.next.next.next = Node(2)
+head.next.next.next.prev = head.next.next
+
+# Print the original doubly linked list
+print("Original Doubly Linked List:")
+printDoublyLinkedList(head)
+
+# Reverse the doubly linked list
+reversed_head = reverseDoublyLinkedList(head)
+
+# Print the reversed doubly linked list
+print("Reversed Doubly Linked List:")
+printDoublyLinkedList(reversed_head)
+Original Doubly Linked List:
+10 8 4 2 
+Reversed Doubly Linked List:
+2 4 8 10 
+Question 8
+Given a doubly linked list and a position. The task is to delete a node from given position in a doubly linked list.
+Example 1:
+
+Input: LinkedList = 1 <--> 3 <--> 4 x = 3 Output:1 3 Explanation:After deleting the node at position 3 (position starts from 1), the linked list will be now as 1->3.
+
+Example 2:
+
+Input: LinkedList = 1 <--> 5 <--> 2 <--> 9 x = 1 Output:5 2 9
+
+Algorithm
+1.If the doubly linked list is empty, return.
+
+2.If the position is 1, set the head pointer to the next node (if it exists) and update the prev pointer of the new head to None.
+
+3.Traverse the doubly linked list to the position where the node needs to be deleted.
+
+4.Update the prev pointer of the next node to point to the previous node.
+
+5.Update the next pointer of the previous node to point to the next node.
+
+6.Delete the node.
+
+# Define the Node class for doubly linked list
+class Node:
+    def __init__(self, value):
+        self.data = value
+        self.prev = None
+        self.next = None
+
+# Function to delete a node from a doubly linked list at a given position
+def deleteNodeAtPosition(head, position):
+    # If the doubly linked list is empty, return
+    if head is None:
+        return head
+
+    # If the position is 1, delete the head node
+    if position == 1:
+        new_head = head.next
+        if new_head is not None:
+            new_head.prev = None
+        return new_head
+
+    # Traverse to the position where the node needs to be deleted
+    current = head
+    for _ in range(position - 1):
+        if current is None:
+            return head
+        current = current.next
+
+    # Update the pointers and delete the node
+    current.prev.next = current.next
+    if current.next is not None:
+        current.next.prev = current.prev
+    current = None
+
+    # Return the head of the doubly linked list
+    return head
+
+# Function to print the doubly linked list
+def printDoublyLinkedList(head):
+    current = head
+    while current is not None:
+        print(current.data, end=" ")
+        current = current.next
+    print()
+
+# Create the doubly linked list
+head = Node(1)
+head.next = Node(5)
+head.next.prev = head
+head.next.next = Node(2)
+head.next.next.prev = head.next
+head.next.next.next = Node(9)
+head.next.next.next.prev = head.next.next
+
+# Print the original doubly linked list
+print("Original Doubly Linked List:")
+printDoublyLinkedList(head)
+
+# Delete a node at position 1
+new_head = deleteNodeAtPosition(head, 1)
+
+# Print the doubly linked list after deletion
+print("Doubly Linked List after deletion:")
+printDoublyLinkedList(new_head)
+Original Doubly Linked List:
+1 5 2 9 
+Doubly Linked List after deletion:
+5 2 9 
+ 
+ 

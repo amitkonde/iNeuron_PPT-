@@ -1,0 +1,336 @@
+Question 1
+Given a non-negative integer x, return the square root of x rounded down to the nearest integer. The returned integer should be non-negative as well.
+You must not use any built-in exponent function or operator.
+
+For example, do not use pow(x, 0.5) in c++ or x ** 0.5 in python.
+Example 1: Input: x = 4 Output: 2 Explanation: The square root of 4 is 2, so we return 2. Example 2: Input: x = 8 Output: 2 Explanation: The square root of 8 is 2.82842..., and since we round it down to the nearest integer, 2 is returned.
+
+Algorithm
+1.If x is 0 or 1, the square root is equal to x, so return x.
+
+2.Initialize two variables, left and right, where left is set to 1 and right is set to x/2 (since the square root of x cannot be greater than x/2 for x > 1).
+
+3.Perform a binary search while left <= right:
+
+a. Calculate the middle value mid as (left + right) / 2.
+
+b. If the square of mid is equal to x, return mid.
+
+c. If the square of mid is greater than x, update right = mid - 1.
+
+d. If the square of mid is less than x, update left = mid + 1.
+
+4.After the binary search, the square root of x will be between left and right. Since we need to return the square root rounded down, return right as the result.
+
+def mySqrt(x):
+    if x == 0 or x == 1:
+        return x
+
+    left = 1
+    right = x // 2
+
+    while left <= right:
+        mid = (left + right) // 2
+        square = mid * mid
+
+        if square == x:
+            return mid
+        elif square > x:
+            right = mid - 1
+        else:
+            left = mid + 1
+
+    return right
+print(mySqrt(4))  
+print(mySqrt(8))  
+2
+2
+Question 2
+A peak element is an element that is strictly greater than its neighbors.
+Given a 0-indexed integer array nums, find a peak element, and return its index. If the array contains multiple peaks, return the index to any of the peaks.
+
+You may imagine that nums[-1] = nums[n] = -∞. In other words, an element is always considered to be strictly greater than a neighbor that is outside the array.
+
+You must write an algorithm that runs in O(log n) time.
+
+Example 1: Input: nums = [1,2,3,1] Output: 2 Explanation: 3 is a peak element and your function should return the index number 2. Example 2: Input: nums = [1,2,1,3,5,6,4] Output: 5 Explanation: Your function can return either index number 1 where the peak element is 2, or index number 5 where the peak element is 6.
+
+Algorithm
+1.Initialize two pointers, left and right, where left is set to 0 and right is set to len(nums) - 1.
+
+2.Perform a binary search while left < right:
+
+a. Calculate the middle index mid as (left + right) // 2.
+
+b. Compare nums[mid] with its neighboring elements, nums[mid-1] and nums[mid+1], if they exist.
+
+c. If nums[mid] is greater than both of its neighbors, return mid as the peak element index.
+
+d. If nums[mid] is less than nums[mid+1], update left = mid + 1.
+
+e. If nums[mid] is less than nums[mid-1], update right = mid - 1.
+
+3.If the binary search ends without finding a peak element, return left
+
+def findPeakElement(nums):
+    left = 0
+    right = len(nums) - 1
+
+    while left < right:
+        mid = (left + right) // 2
+
+        if nums[mid] > nums[mid+1] and nums[mid] > nums[mid-1]:
+            return mid
+        elif nums[mid] < nums[mid+1]:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return left
+print(findPeakElement([1, 2, 3, 1]))           
+print(findPeakElement([1, 2, 1, 3, 5, 6, 4]))  
+2
+5
+Question 3
+Given an array nums containing n distinct numbers in the range [0, n], return the only number in the range that is missing from the array.
+Example 1: Input: nums = [3,0,1] Output: 2 Explanation: n = 3 since there are 3 numbers, so all numbers are in the range [0,3]. 2 is the missing number in the range since it does not appear in nums. Example 2: Input: nums = [0,1] Output: 2 Explanation: n = 2 since there are 2 numbers, so all numbers are in the range [0,2]. 2 is the missing number in the range since it does not appear in nums. Example 3: Input: nums = [9,6,4,2,3,5,7,0,1] Output: 8 Explanation: n = 9 since there are 9 numbers, so all numbers are in the range [0,9]. 8 is the missing number in the range since it does not appear in nums.
+
+Algorithm
+1.Initialize a variable missing to n, which represents the upper bound of the range.
+
+2.Iterate through the elements num in nums and update missing using the XOR operation as follows: missing ^= num ^ index, where index is the current index.
+
+3.After the iteration, the missing variable will hold the XOR result of all the numbers in the range [0, n] and the elements in nums. Since all numbers in the range except for the missing number appear twice in nums (once as the element itself and once as the index in the XOR operation), the missing number will be canceled out, leaving only the missing number in missing.
+
+4.Return the value of missing, which is the missing number.
+
+def missingNumber(nums):
+    n = len(nums)
+    missing = n
+
+    for i, num in enumerate(nums):
+        missing ^= num ^ i
+
+    return missing
+Question 4
+Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.
+There is only one repeated number in nums, return this repeated number.
+
+You must solve the problem without modifying the array nums and uses only constant extra space.
+
+Example 1: Input: nums = [1,3,4,2,2] Output: 2 Example 2: Input: nums = [3,1,3,4,2] Output: 3
+
+Algorithm
+1.Start by initializing two pointers, slow and fast, to the first element of nums.
+
+2.Move slow one step forward and fast two steps forward in each iteration until they meet.
+
+3.Once slow and fast meet, reset fast to the first element of nums.
+
+4.Move both slow and fast one step forward in each iteration until they meet again. The point at which they meet is the starting point of the cycle.
+
+5.Return the value of either slow or fast as the repeated number.
+
+def findDuplicate(nums):
+    slow = nums[0]
+    fast = nums[0]
+
+    while True:
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+        if slow == fast:
+            break
+
+    fast = nums[0]
+
+    while slow != fast:
+        slow = nums[slow]
+        fast = nums[fast]
+
+    return slow
+print(findDuplicate([1, 3, 4, 2, 2]))  
+print(findDuplicate([3, 1, 3, 4, 2]))  
+2
+3
+Question 5
+Given two integer arrays nums1 and nums2, return an array of their intersection. Each element in the result must be unique and you may return the result in any order.
+Example 1: Input: nums1 = [1,2,2,1], nums2 = [2,2] Output: [2] Example 2: Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4] Output: [9,4] Explanation: [4,9] is also accepted.
+
+Algorithm
+1.Initialize an empty set, nums1_set, and a result list, intersection, to store the unique elements and the intersection, respectively.
+
+2.Iterate through each element num in nums1 and add it to nums1_set.
+
+3.Iterate through each element num in nums2:
+
+4.If num is present in nums1_set and not already in the intersection list, add it to the intersection list.
+
+5.Return the intersection list as the result.
+
+def intersection(nums1, nums2):
+    nums1_set = set(nums1)
+    intersection = []
+
+    for num in nums2:
+        if num in nums1_set and num not in intersection:
+            intersection.append(num)
+
+    return intersection
+print(intersection([1, 2, 2, 1], [2, 2]))                      
+print(intersection([4, 9, 5], [9, 4, 9, 8, 4]))               
+[2]
+[9, 4]
+Question 6
+Suppose an array of length n sorted in ascending order is rotated between 1 and n times. For example, the array nums = [0,1,2,4,5,6,7] might become:
+[4,5,6,7,0,1,2] if it was rotated 4 times.
+[0,1,2,4,5,6,7] if it was rotated 7 times.
+Notice that rotating an array [a[0], a[1], a[2], ..., a[n-1]] 1 time results in the array [a[n-1], a[0], a[1], a[2], ..., a[n-2]].
+
+Given the sorted rotated array nums of unique elements, return the minimum element of this array.
+
+You must write an algorithm that runs in O(log n) time.
+
+Example 1: Input: nums = [3,4,5,1,2] Output: 1 Explanation: The original array was [1,2,3,4,5] rotated 3 times. Example 2: Input: nums = [4,5,6,7,0,1,2] Output: 0 Explanation: The original array was [0,1,2,4,5,6,7] and it was rotated 4 times. Example 3: Input: nums = [11,13,15,17] Output: 11 Explanation: The original array was [11,13,15,17] and it was rotated 4 times.
+
+Algorithm
+1.Initialize two pointers, left and right, where left is set to 0 and right is set to len(nums) - 1.
+
+2.Perform a binary search while left < right:
+
+a. Calculate the middle index mid as (left + right) // 2.
+
+b. Check if nums[mid] is greater than nums[right]. If it is, it means the minimum element lies in the right half of the array, so update left = mid + 1.
+
+c. Otherwise, the minimum element lies in the left half of the array or could be the middle element itself, so update right = mid.
+
+3.When the binary search ends, the value at nums[left] (or nums[right]) will be the minimum element.
+
+4.Return the value at nums[left] (or nums[right]) as the result.
+
+def findMin(nums):
+    left = 0
+    right = len(nums) - 1
+
+    while left < right:
+        mid = (left + right) // 2
+
+        if nums[mid] > nums[right]:
+            left = mid + 1
+        else:
+            right = mid
+
+    return nums[left]
+print(findMin([3, 4, 5, 1, 2]))       
+print(findMin([4, 5, 6, 7, 0, 1, 2]))   
+print(findMin([11, 13, 15, 17]))        
+1
+0
+11
+Question 7
+Given an array of integers nums sorted in non-decreasing order, find the starting and ending position of a given target value.
+If target is not found in the array, return [-1, -1].
+
+You must write an algorithm with O(log n) runtime complexity.
+
+Example 1: Input: nums = [5,7,7,8,8,10], target = 8 Output: [3,4] Example 2: Input: nums = [5,7,7,8,8,10], target = 6 Output: [-1,-1] Example 3: Input: nums = [], target = 0 Output: [-1,-1]
+
+Algorithm
+1.Initialize two variables, left and right, to store the leftmost and rightmost occurrences of the target, respectively. Set left to the index of the first element in nums and right to the index of the last element in nums.
+
+2.Perform the first binary search to find the leftmost occurrence:
+
+a. While left < right, calculate the middle index mid as (left + right) // 2.
+
+b. If nums[mid] is less than the target, update left = mid + 1.
+
+c. If nums[mid] is greater than or equal to the target, update right = mid.
+
+3.After the first binary search, the left variable will contain the index of the leftmost occurrence of the target. If nums[left] is not equal to the target, return [-1, -1].
+
+4.Reset the right variable to the index of the last element in nums.
+
+5.Perform the second binary search to find the rightmost occurrence:
+
+a. While left < right, calculate the middle index mid as (left + right + 1) // 2.
+
+b. If nums[mid] is greater than the target, update right = mid - 1.
+
+c. If nums[mid] is less than or equal to the target, update left = mid.
+
+6.After the second binary search, the right variable will contain the index of the rightmost occurrence of the target.
+
+7.Return [left, right] as the result.
+
+def searchRange(nums, target):
+    if not nums:
+        return [-1, -1]
+
+    left = 0
+    right = len(nums) - 1
+
+    while left < right:
+        mid = (left + right) // 2
+
+        if nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid
+
+    if nums[left] != target:
+        return [-1, -1]
+
+    right = len(nums) - 1
+
+    while left < right:
+        mid = (left + right + 1) // 2
+
+        if nums[mid] > target:
+            right = mid - 1
+        else:
+            left = mid
+
+    return [left, right]
+print(searchRange([5, 7, 7, 8, 8, 10], 8))   
+print(searchRange([5, 7, 7, 8, 8, 10], 6))   
+print(searchRange([], 0))                  
+[4, 4]
+[-1, -1]
+[-1, -1]
+Question 8
+Given two integer arrays nums1 and nums2, return an array of their intersection. Each element in the result must appear as many times as it shows in both arrays and you may return the result in any order.
+Example 1: Input: nums1 = [1,2,2,1], nums2 = [2,2] Output: [2,2] Example 2: Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4] Output: [4,9] Explanation: [9,4] is also accepted.
+
+Algorithm
+1.Initialize an empty hash map freq_map to store the frequency of elements in nums1.
+
+2.Iterate through each element num in nums1 and update its frequency in freq_map. If num is not present in freq_map, set its frequency to 1. Otherwise, increment its frequency by 1.
+
+3.Initialize an empty list result to store the intersection elements.
+
+4.Iterate through each element num in nums2:
+
+a. If num is present in freq_map and its frequency is greater than 0, append it to result and decrement its frequency in freq_map.
+
+5.Return result as the output.
+
+from collections import defaultdict
+
+def intersect(nums1, nums2):
+    freq_map = defaultdict(int)
+
+    for num in nums1:
+        freq_map[num] += 1
+
+    result = []
+
+    for num in nums2:
+        if freq_map[num] > 0:
+            result.append(num)
+            freq_map[num] -= 1
+
+    return result
+print(intersect([1, 2, 2, 1], [2, 2]))            
+print(intersect([4, 9, 5], [9, 4, 9, 8, 4]))     
+[2, 2]
+[9, 4]
+ 

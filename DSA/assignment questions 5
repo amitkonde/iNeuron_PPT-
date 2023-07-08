@@ -1,0 +1,229 @@
+Question 1
+Convert 1D Array Into 2D Array
+You are given a 0-indexed 1-dimensional (1D) integer array original, and two integers, m and n. You are tasked with creating a 2-dimensional (2D) array with m rows and n columns using all the elements from original. The elements from indices 0 to n - 1 (inclusive) of original should form the first row of the constructed 2D array, the elements from indices n to 2 * n - 1 (inclusive) should form the second row of the constructed 2D array, and so on. Return an m x n 2D array constructed according to the above procedure, or an empty 2D array if it is impossible. Input: original = [1,2,3,4], m = 2, n = 2
+
+Output: [[1,2],[3,4]]
+
+Algorithm
+1.Check if the length of the original array is equal to m * n. If not, return an empty 2D array since it is impossible to construct the desired array.
+2.Create an empty 2D array with m rows and n columns.
+3.Initialize a variable index to 0 to keep track of the current index in the original array.
+4.Iterate over the rows from 0 to m - 1.
+    Inside the row loop, create a new row and append it to the 2D array.
+    Iterate over the columns from 0 to n - 1.
+        Inside the column loop, assign the element at the current index in the original array to the corresponding position in the 2D array.
+        Increment the index by 1.
+5.Return the constructed 2D array.
+def construct2DArray(original, m, n):
+    if len(original) != m * n:
+        return []  
+    result = []
+    index = 0   
+    for i in range(m):
+        row = []
+        for j in range(n):
+            row.append(original[index])
+            index += 1
+        result.append(row)  
+    return result
+original = [1, 2, 3, 4]
+m = 2
+n = 2
+print(construct2DArray(original, m, n))
+[[1, 2], [3, 4]]
+Question 2
+You have n coins and you want to build a staircase with these coins. The staircase consists of k rows where the ith row has exactly i coins. The last row of the staircase may be incomplete.
+Given the integer n, return the number of complete rows of the staircase you will build. Input: n = 5 Output: 2
+
+Algorithm
+1.Initialize a variable rowCount to 0 to keep track of the number of complete rows.
+2.Initialize a variable coinCount to 0 to keep track of the total number of coins.
+3.Initialize a variable row to 1 to represent the current row.
+4.While coinCount is less than or equal to n:
+    Increment rowCount by 1.
+    Increment coinCount by the number of coins required for the current row, row*(row+1)/2.
+    Increment row by 1.
+5.If coinCount is greater than n, decrement rowCount by 1 since the last row is incomplete.
+6.Return rowCount.
+def arrangeCoins(n):
+    rowCount = 0
+    coinCount = 0
+    row = 1    
+    while coinCount <= n:
+        rowCount += 1
+        coinCount += row * (row + 1) // 2
+        row += 1   
+    if coinCount > n:
+        rowCount -= 1    
+    return rowCount
+n = 5
+print(arrangeCoins(n))
+2
+Question 3
+Given an integer array nums sorted in non-decreasing order, return an array of the squares of each number sorted in non-decreasing order.
+Example 1:
+
+Input: nums = [-4,-1,0,3,10] Output: [0,1,9,16,100]
+
+Algorithm
+1.Create an empty array called result to store the squares of the numbers.
+2.Iterate over the elements in the nums array.
+3.For each element, square it and append the square to the result array.
+4.Sort the result array in non-decreasing order.
+5.Return the result array.
+def sortedSquares(nums):
+    result = []
+    for num in nums:
+        result.append(num * num) 
+    result.sort()  
+    return result
+nums = [-4, -1, 0, 3, 10]
+print(sortedSquares(nums))
+[0, 1, 9, 16, 100]
+Question 4
+Given two 0-indexed integer arrays nums1 and nums2, return a list answer of size 2 where:
+answer[0] is a list of all distinct integers in nums1 which are not present in nums2. answer[1] is a list of all distinct integers in nums2 which are not present in nums1. Note that the integers in the lists may be returned in any order. Example 1: Input: nums1 = [1,2,3], nums2 = [2,4,6] Output: [[1,3],[4,6]]
+
+Algorithm
+1.Create two sets, set1 and set2, to store the distinct integers from nums1 and nums2 respectively.
+2.Iterate over the elements in nums1 and add each element to set1.
+3.Iterate over the elements in nums2 and add each element to set2.
+4.Create two empty lists, answer1 and answer2, to store the distinct integers that are not present in the other array.
+5.Iterate over the elements in nums1 and check if each element is not present in set2. If true, append the element to answer1.
+6.Iterate over the elements in nums2 and check if each element is not present in set1. If true, append the element to answer2.
+7.Return a list answer containing answer1 and answer2.
+def findDisappearedNumbers(nums1, nums2):
+    set1 = set(nums1)
+    set2 = set(nums2)
+    answer1 = [num for num in nums1 if num not in set2]
+    answer2 = [num for num in nums2 if num not in set1] 
+    answer = [answer1, answer2]   
+    return answer
+nums1 = [1, 2, 3]
+nums2 = [2, 4, 6]
+print(findDisappearedNumbers(nums1, nums2))
+[[1, 3], [4, 6]]
+Question 5
+Given two integer arrays arr1 and arr2, and the integer d, return the distance value between the two arrays.
+The distance value is defined as the number of elements arr1[i] such that there is not any element arr2[j] where |arr1[i]-arr2[j]| <= d. Example 1: Input: arr1 = [4,5,8], arr2 = [10,9,1,8], d = 2 Output: 2
+
+Algorithm
+1.Initialize a variable distance to 0 to keep track of the distance value.
+2.Iterate over the elements in arr1.
+3.For each element num in arr1, iterate over the elements in arr2.
+4.For each element num2 in arr2, check if the absolute difference between num and num2 is greater than d.
+    If true, increment distance by 1 and break out of the inner loop since we have found a valid element in arr1.
+5.Return the final distance value.
+def findTheDistanceValue(arr1, arr2, d):
+    distance = 0  
+    for num in arr1:
+        for num2 in arr2:
+            if abs(num - num2) <= d:
+                break
+        else:
+            distance += 1
+    return distance
+arr1 = [4, 5, 8]
+arr2 = [10, 9, 1, 8]
+d = 2
+print(findTheDistanceValue(arr1, arr2, d))
+2
+Question 6
+Given an integer array nums of length n where all the integers of nums are in the range [1, n] and each integer appears once or twice, return an array of all the integers that appears twice.
+You must write an algorithm that runs in O(n) time and uses only constant extra space. Example 1: Input: nums = [4,3,2,7,8,2,3,1] Output: [2,3]
+
+Algorithm
+1.Initialize an empty list called result to store the integers that appear twice.
+2.Iterate over the elements in nums.
+3.For each element num, calculate the absolute value of num and subtract 1 to get the corresponding index in the array.
+4.Check the value at the calculated index in the array.
+    If the value is positive, negate it to mark the presence of the integer.
+    If the value is negative, append the absolute value of num to the result list since it appears twice.
+5.Return the result list.
+def findDuplicates(nums):
+    result = []  
+    for num in nums:
+        index = abs(num) - 1
+        if nums[index] > 0:
+            nums[index] = -nums[index]
+        else:
+            result.append(abs(num))  
+    return result
+nums = [4, 3, 2, 7, 8, 2, 3, 1]
+print(findDuplicates(nums))
+[2, 3]
+Question 7
+Suppose an array of length n sorted in ascending order is rotated between 1 and n times. For example, the array nums = [0,1,2,4,5,6,7] might become:
+[4,5,6,7,0,1,2] if it was rotated 4 times.
+[0,1,2,4,5,6,7] if it was rotated 7 times.
+Notice that rotating an array [a[0], a[1], a[2], ..., a[n-1]] 1 time results in the array [a[n-1], a[0], a[1], a[2], ..., a[n-2]].
+
+Given the sorted rotated array nums of unique elements, return the minimum element of this array.
+
+You must write an algorithm that runs in O(log n) time.
+
+Example 1:
+
+Input: nums = [3,4,5,1,2]
+
+Output: 1
+
+Algorithm
+1.Initialize two pointers, left and right, to the start and end indices of the array respectively.
+2.While left is less than right:
+    Calculate the middle index as mid = left + (right - left) // 2.
+    Compare the middle element nums[mid] with the first and last elements of the array:
+        If nums[mid] > nums[right], the minimum element is in the right part of the array, so update left = mid + 1.
+        If nums[mid] < nums[right], the minimum element is in the left part of the array (including the middle element), so update right = mid.
+3.At the end of the loop, left will be pointing to the minimum element in the array.
+4.Return nums[left] as the minimum element.
+def findMin(nums):
+    left = 0
+    right = len(nums) - 1
+    while left < right:
+        mid = left + (right - left) // 2
+        if nums[mid] > nums[right]:
+            left = mid + 1
+        else:
+            right = mid
+    
+    return nums[left]
+nums = [3, 4, 5, 1, 2]
+print(findMin(nums))
+1
+Question 8
+An integer array original is transformed into a doubled array changed by appending twice the value of every element in original, and then randomly shuffling the resulting array.
+Given an array changed, return original if changed is a doubled* array. If* changed is not a doubled* array, return an empty array. The elements in* original may be returned in any* order. Example 1:* Input: changed = [1,3,4,2,6,8] Output: [1,3,4]
+
+Algorithm
+1.Sort the changed array in ascending order.
+2.Create a dictionary called count to store the count of each element in the changed array.
+3.Iterate over the elements in the changed array.
+4.For each element num in the changed array, do the following:
+    Check if 2 * num is not in the count dictionary or if its count has reached zero. If true, return an empty array since changed is not a doubled array.
+    Otherwise, decrement the count of 2 * num in the count dictionary.
+5.Create an empty list called original to store the original array.
+6.Iterate over the elements in the changed array.
+7.For each element num in the changed array, do the following:
+    Check if num is not in the count dictionary or if its count has reached zero. If true, continue to the next iteration.
+    Otherwise, append num to the original array and decrement the count of num in the count dictionary.
+8.Return the original array.
+def findOriginalArray(changed):
+    sorted_changed = sorted(changed)
+    count = {}
+    for num in changed:
+        count[num] = count.get(num, 0) + 1
+    original = []
+    for num in sorted_changed:
+        if num not in count or count[num] == 0:
+            continue 
+        if 2 * num not in count or count[2 * num] == 0:
+            return []
+        original.append(num)
+        count[num] -= 1
+        count[2 * num] -= 1 
+    return original
+changed = [1, 3, 4, 2, 6, 8]
+print(findOriginalArray(changed))
+[1, 3, 4]
+ 

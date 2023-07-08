@@ -1,0 +1,349 @@
+Question 1
+Given two strings s and t, determine if they are isomorphic.
+Two strings s and t are isomorphic if the characters in s can be replaced to get t.
+
+All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character, but a character may map to itself.
+
+Example 1:
+
+Input: s = "egg", t = "add"
+
+Output: true
+
+Algorithm
+1.First, we check if the lengths of s and t are equal. If they are not equal, they cannot be isomorphic, so we return false. 2.We create two dictionaries, s_map and t_map, to store the mappings of characters from s to t, and vice versa, respectively. 3.We iterate through the characters of s and t simultaneously, comparing the characters at the same position: a. If the current characters are already in the mappings dictionaries and their mappings do not match, we return false. This ensures that no two characters in s can map to the same character in t. b. If the current characters are not in the mappings dictionaries, we add them to the dictionaries with their corresponding mappings. 4.If we have iterated through all the characters and haven't encountered any mismatches, we return true, indicating that s and t are isomorphic.
+
+def isomorphic_strings(s, t):
+    if len(s) != len(t):
+        return False
+
+    s_map = {}
+    t_map = {}
+
+    for i in range(len(s)):
+        s_char = s[i]
+        t_char = t[i]
+
+        if s_char in s_map and s_map[s_char] != t_char:
+            return False
+
+        if t_char in t_map and t_map[t_char] != s_char:
+            return False
+
+        s_map[s_char] = t_char
+        t_map[t_char] = s_char
+
+    return True
+s = "egg"
+t = "add"
+print(isomorphic_strings(s, t)) 
+True
+Question 2
+Given a string num which represents an integer, return true if num is a strobogrammatic number**.
+A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+
+Example 1:
+
+Input: num = "69"
+
+Output:
+
+true
+
+Algorithm
+1.Create a dictionary, mapping, to store the mappings of valid strobogrammatic digits.
+
+2.Initialize two pointers, left and right, pointing to the start and end of the string num, respectively.
+
+3.Iterate until left is less than or equal to right:
+
+a. Check if the characters at positions left and right are valid strobogrammatic digits according to the mapping dictionary. If not, return False.
+
+b. Check if the characters at positions left and right are mirror images of each other. If not, return False.
+
+c. Increment left and decrement right to move towards the center of the string.
+
+4.If we have iterated through the entire string without encountering any mismatches, return True, indicating that the number is a strobogrammatic number.
+
+def is_strobogrammatic(num):
+    mapping = {
+        '0': '0',
+        '1': '1',
+        '6': '9',
+        '8': '8',
+        '9': '6'
+    }
+
+    left = 0
+    right = len(num) - 1
+
+    while left <= right:
+        if num[left] not in mapping or num[right] not in mapping:
+            return False
+
+        if mapping[num[left]] != num[right]:
+            return False
+
+        left += 1
+        right -= 1
+
+    return True
+num = "69"
+print(is_strobogrammatic(num))  
+True
+Question 3
+Given two non-negative integers, num1 and num2 represented as string, return the sum of num1 and num2 as a string.
+You must solve the problem without using any built-in library for handling large integers (such as BigInteger). You must also not convert the inputs to integers directly.
+
+Example 1:
+
+Input: num1 = "11", num2 = "123"
+
+Output:
+
+"134"
+
+Algorithm
+1.Initialize an empty string, result, to store the sum of the two numbers.
+
+2.Initialize two pointers, i and j, pointing to the last characters of num1 and num2, respectively.
+
+3.Initialize a carry variable, carry, to 0.
+
+4.Iterate until both i and j are greater than or equal to 0:
+
+a. Convert the characters at positions i and j to integers, digit1 and digit2, respectively.
+
+b. Add digit1, digit2, and carry to get the sum, sum_digits.
+
+c. Append the last digit of sum_digits (obtained using sum_digits % 10) to the beginning of result.
+
+d. Update the carry to sum_digits // 10.
+
+e. Decrement i and j to move to the next digits of num1 and num2, respectively.
+
+5.If there are any remaining digits in num1, append them to the beginning of result.
+
+6.If there are any remaining digits in num2, append them to the beginning of result.
+
+7.If the carry is greater than 0, append it to the beginning of result.
+
+8.Return the final result string.
+
+def add_strings(num1, num2):
+    i = len(num1) - 1
+    j = len(num2) - 1
+    carry = 0
+    result = ""
+
+    while i >= 0 or j >= 0:
+        digit1 = int(num1[i]) if i >= 0 else 0
+        digit2 = int(num2[j]) if j >= 0 else 0
+
+        sum_digits = digit1 + digit2 + carry
+        result = str(sum_digits % 10) + result
+        carry = sum_digits // 10
+
+        i -= 1
+        j -= 1
+
+    if carry > 0:
+        result = str(carry) + result
+
+    return result
+num1 = "11"
+num2 = "123"
+print(add_strings(num1, num2))  
+134
+Question 4
+Given a string s, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
+Example 1:
+
+Input: s = "Let's take LeetCode contest"
+
+Output: "s'teL ekat edoCteeL tsetnoc"
+
+Algorithm
+1.Split the string s into a list of words using whitespace as the delimiter. We can use the split() method in Python to achieve this.
+
+2.Initialize an empty list, reversed_words, to store the reversed words.
+
+3.Iterate through each word in the list of words:
+
+a. Reverse the characters in the word using string slicing with a step of -1.
+
+b. Append the reversed word to the reversed_words list.
+
+4.Join the words in the reversed_words list using a whitespace separator to obtain the final reversed string.
+
+def reverse_words(s):
+    words = s.split()
+    reversed_words = []
+
+    for word in words:
+        reversed_word = word[::-1]
+        reversed_words.append(reversed_word)
+
+    return ' '.join(reversed_words)
+s = "Let's take LeetCode contest"
+print(reverse_words(s))  
+s'teL ekat edoCteeL tsetnoc
+Question 5
+Given a string s and an integer k, reverse the first k characters for every 2k characters counting from the start of the string.
+If there are fewer than k characters left, reverse all of them. If there are less than 2k but greater than or equal to k characters, then reverse the first k characters and leave the other as original.
+
+Example 1:
+
+Input: s = "abcdefg", k = 2
+
+Output:
+
+"bacdfeg"
+
+Algorithm
+1.Convert the string s into a list of characters so that we can modify it. Strings in Python are immutable, so converting it to a list allows us to make changes.
+
+2.Initialize a variable n to store the length of the string.
+
+3.Iterate through the string with a step size of 2k:
+
+a. Check if there are at least k characters remaining from the current index i. If not, break the loop.
+
+b. Reverse the first k characters in the sublist from index i to i + k using the slice assignment s[i:i+k] = s[i:i+k][::-1].
+
+4.Convert the list of characters back to a string using the join() method, and return the final reversed string.
+
+def reverse_string(s, k):
+    s = list(s)
+    n = len(s)
+
+    for i in range(0, n, 2*k):
+        if i + k <= n:
+            s[i:i+k] = s[i:i+k][::-1]
+        else:
+            s[i:] = s[i:][::-1]
+
+    return ''.join(s)
+s = "abcdefg"
+k = 2
+print(reverse_string(s, k))  
+bacdfeg
+Question 6
+Given two strings s and goal, return true if and only if s can become goal after some number of shifts* on* s.
+A shift on s consists of moving the leftmost character of s to the rightmost position.
+
+For example, if s = "abcde", then it will be "bcdea" after one shift.
+Example 1:
+
+Input: s = "abcde", goal = "cdeab"
+
+Output:
+
+true
+
+Algorithm
+1.Check if the lengths of s and goal are equal. If they are not equal, s cannot become goal after any number of shifts, so we return False.
+
+2.Concatenate s with itself to create a new string s_concat. This ensures that all possible shifts of s are considered.
+
+3.Check if goal is a substring of s_concat. If it is, s can become goal after some number of shifts, so we return True. Otherwise, we return False.
+
+def can_shift(s, goal):
+    if len(s) != len(goal):
+        return False
+
+    s_concat = s + s
+
+    if goal in s_concat:
+        return True
+    else:
+        return False
+s = "abcde"
+goal = "cdeab"
+print(can_shift(s, goal))  
+True
+Question 7
+Given two strings s and t, return true if they are equal when both are typed into empty text editors. '#' means a backspace character.
+Note that after backspacing an empty text, the text will continue empty.
+
+Example 1:
+
+Input: s = "ab#c", t = "ad#c"
+
+Output: true
+
+Explanation:
+
+Both s and t become "ac".
+
+Algorithm
+1.Define a helper function, process_string, that takes a string as input and returns the final processed string after applying the backspaces.
+
+2.Initialize two empty lists, processed_s and processed_t, to store the processed strings for s and t, respectively.
+
+3.Iterate through each character in s:
+
+a. If the current character is not '#', append it to processed_s.
+
+b. If the current character is '#', remove the last character from processed_s if it is not empty.
+
+4.Iterate through each character in t:
+
+a. If the current character is not '#', append it to processed_t.
+
+b. If the current character is '#', remove the last character from processed_t if it is not empty.
+
+5.Check if processed_s is equal to processed_t. If they are equal, return True. Otherwise, return False.
+
+def process_string(string):
+    processed_string = []
+    for char in string:
+        if char != '#':
+            processed_string.append(char)
+        elif processed_string:
+            processed_string.pop()
+    return ''.join(processed_string)
+
+def backspace_compare(s, t):
+    processed_s = process_string(s)
+    processed_t = process_string(t)
+    return processed_s == processed_t
+s = "ab#c"
+t = "ad#c"
+print(backspace_compare(s, t))  
+True
+Question 8
+You are given an array coordinates, coordinates[i] = [x, y], where [x, y] represents the coordinate of a point. Check if these points make a straight line in the XY plane.
+Example 1:
+
+Input: coordinates = [[1,2],[2,3],[3,4],[4,5],[5,6],[6,7]]
+
+Output: true
+
+Algorithm
+1.Check the slope between the first two points, (x1, y1) and (x2, y2). Calculate the slope as (y2 - y1) / (x2 - x1).
+
+2.Iterate through the remaining points starting from the third point (x3, y3) onwards:
+
+a. Calculate the slope between the current point and the first point, (x1, y1), as (y3 - y1) / (x3 - x1).
+
+b. If the calculated slope is not equal to the slope calculated in step 1, return False, as it indicates that the points do not lie on a straight line.
+
+3.If all the slopes are equal, return True, indicating that the points form a straight line.
+
+def check_straight_line(coordinates):
+    x1, y1 = coordinates[0]
+    x2, y2 = coordinates[1]
+    slope = (y2 - y1) / (x2 - x1)
+
+    for i in range(2, len(coordinates)):
+        x, y = coordinates[i]
+        current_slope = (y - y1) / (x - x1)
+        if current_slope != slope:
+            return False
+
+    return True
+coordinates = [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]
+print(check_straight_line(coordinates))  
+True
+ 
