@@ -1,0 +1,1073 @@
+ASSIGNMENT 6
+
+1. Data Ingestion Pipeline:
+
+a. Design a data ingestion pipeline that collects and stores data from various sources such as databases, APIs, and streaming platforms.
+To design a data ingestion pipeline in Python that collects and stores data from various sources, such as databases, APIs, and streaming platforms, you can follow these general steps:
+
+Identify Data Sources:
+Determine the data sources you want to collect from, such as databases, APIs, or streaming platforms.
+Understand the data formats, access methods, and any authentication or authorization requirements for each source.
+Choose Data Collection Tools and Libraries:
+Select appropriate Python libraries and tools that can interact with the different data sources.
+For databases, you can use libraries like SQLAlchemy, psycopg2, or pymongo, depending on the database type.
+For APIs, libraries like requests or specialized API wrappers can be used.
+For streaming platforms, libraries like Kafka-Python, Pulsar, or Apache Beam can be utilized.
+Establish Connection and Authentication:
+Set up connections to the data sources using appropriate connection parameters or credentials.
+Configure authentication methods, such as API keys or OAuth tokens, as required by the data sources.
+Fetch and Collect Data:
+Write functions or classes to fetch data from each source, using the corresponding libraries.
+For databases, you can write SQL queries or use ORM (Object-Relational Mapping) techniques.
+For APIs, make HTTP requests and process the responses to extract the required data.
+For streaming platforms, set up consumer or subscriber clients to consume the data stream.
+Handle Data Transformations and Preprocessing:
+Perform any necessary data transformations or preprocessing steps to clean, format, or enrich the collected data.
+Use appropriate libraries for data manipulation, cleaning, and transformation, such as pandas or NumPy.
+Define Storage Mechanisms:
+Determine the storage mechanisms based on your requirements, such as databases, data lakes, or file systems.
+Choose suitable storage technologies like PostgreSQL, MySQL, MongoDB, Apache Hadoop, Apache Parquet, or Amazon S3.
+Write Data to Storage:
+Develop code to write the collected and processed data to the chosen storage mechanisms.
+Utilize appropriate libraries or database connectors to insert or write the data.
+Ensure data integrity, consistency, and error handling during the writing process.
+Implement Scheduling and Automation:
+Set up scheduling mechanisms, such as cron jobs or task schedulers, to automate the data ingestion pipeline.
+Determine the frequency of data collection and define the intervals or triggers accordingly.
+Implement Error Handling and Logging:
+Include error handling mechanisms to handle exceptions or failures during data collection or storage.
+Use logging frameworks, such as Python's built-in logging module or third-party libraries like loguru or structlog, to log pipeline activities, errors, and information.
+Monitor and Maintain:
+Monitor the data ingestion pipeline for performance, data quality, and any potential issues.
+Implement monitoring and alerting mechanisms to identify and address any pipeline failures or anomalies.
+Regularly review and maintain the pipeline to adapt to changes in data sources or requirements.
+Remember, the specific implementation details and libraries used may vary depending on the exact data sources, storage mechanisms, and requirements of your data ingestion pipeline.
+
+Here's an example Python code snippet that demonstrates the data ingestion pipeline for collecting and storing data from various sources:
+
+import requests
+import json
+import psycopg2
+from sqlalchemy import create_engine
+import pymongo
+from kafka import KafkaConsumer
+import pandas as pd
+
+# Connect to the database
+db_conn = psycopg2.connect(database="your_database", user="your_username", password="your_password", host="localhost", port="5432")
+db_cursor = db_conn.cursor()
+
+# Connect to MongoDB
+mongo_client = pymongo.MongoClient("mongodb://localhost:27017")
+mongo_db = mongo_client["your_database"]
+mongo_collection = mongo_db["your_collection"]
+
+# Create an engine for SQLAlchemy
+db_engine = create_engine('postgresql://your_username:your_password@localhost:5432/your_database')
+
+# Connect to Kafka
+consumer = KafkaConsumer('your_topic', bootstrap_servers=['localhost:9092'])
+
+# Fetch data from API
+response = requests.get('your_api_url')
+api_data = json.loads(response.text)
+
+# Process and store the API data
+processed_api_data = process_api_data(api_data)
+db_cursor.execute("INSERT INTO your_table (column1, column2) VALUES (%s, %s)", (processed_api_data['value1'], processed_api_data['value2']))
+db_conn.commit()
+
+# Fetch and process data from Kafka
+for message in consumer:
+    kafka_data = json.loads(message.value)
+    processed_kafka_data = process_kafka_data(kafka_data)
+    mongo_collection.insert_one(processed_kafka_data)
+
+# Fetch data from a database table
+query = "SELECT * FROM your_table"
+df = pd.read_sql_query(query, db_engine)
+
+# Perform data transformations and preprocessing
+transformed_data = transform_data(df)
+
+# Store the transformed data in a file
+transformed_data.to_csv('transformed_data.csv', index=False)
+
+# Close database connections and Kafka consumer
+db_cursor.close()
+db_conn.close()
+mongo_client.close()
+consumer.close()
+Please note that this is just a basic example to give you an idea of how the data ingestion pipeline can be implemented in Python. You would need to customize and expand this code according to your specific requirements, including proper error handling, authentication, and other necessary components.
+
+b. Implement a real-time data ingestion pipeline for processing sensor data from IoT devices.
+To implement a real-time data ingestion pipeline for processing sensor data from IoT devices in Python, you can utilize a combination of technologies such as MQTT (Message Queuing Telemetry Transport) protocol, MQTT broker, and a Python MQTT client library. Here's an example code snippet that demonstrates the basic implementation of such a pipeline:
+
+import paho.mqtt.client as mqtt
+import json
+import time
+
+# MQTT broker settings
+broker_address = "mqtt_broker_address"
+broker_port = 1883
+topic = "your_topic"
+
+# Define callback functions for MQTT events
+def on_connect(client, userdata, flags, rc):
+    print("Connected to MQTT broker with result code: " + str(rc))
+    client.subscribe(topic)
+
+def on_message(client, userdata, msg):
+    payload = msg.payload.decode("utf-8")
+    data = json.loads(payload)
+
+    # Process and analyze the received sensor data
+    process_sensor_data(data)
+
+# Create an MQTT client instance
+client = mqtt.Client()
+
+# Set MQTT event callbacks
+client.on_connect = on_connect
+client.on_message = on_message
+
+# Connect to the MQTT broker
+client.connect(broker_address, broker_port, 60)
+
+# Start the MQTT client loop to handle incoming messages
+client.loop_start()
+
+# Continuously process sensor data until interrupted
+try:
+    while True:
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("Interrupted, stopping data ingestion.")
+
+# Disconnect from the MQTT broker
+client.disconnect()
+In the above code snippet, we're using the Paho MQTT client library (paho.mqtt.client) to connect to an MQTT broker, subscribe to a specific topic, and receive real-time sensor data messages from IoT devices. The on_connect and on_message callback functions handle the corresponding MQTT events. The on_message function processes and analyzes the received sensor data using the process_sensor_data function (which you can define as per your requirements).
+
+To utilize this code, you need to replace "mqtt_broker_address" with the actual address of your MQTT broker, update the "your_topic" placeholder with the desired topic to subscribe to, and implement the process_sensor_data function to handle the received data.
+
+Remember to install the paho-mqtt library before running the code. You can install it via pip using the command: pip install paho-mqtt.
+
+Additionally, you may need to handle authentication, encryption, and other security aspects based on the MQTT broker configuration and requirements of your IoT infrastructure.
+
+c. Develop a data ingestion pipeline that handles data from different file formats (CSV, JSON, etc.) and performs data validation and cleansing.
+To develop a data ingestion pipeline in Python that handles data from different file formats (such as CSV, JSON) and performs data validation and cleansing, you can utilize libraries like pandas and json. Here's an example code snippet that demonstrates the basic implementation of such a pipeline:
+
+import pandas as pd
+import json
+
+# Function to read and process CSV files
+def process_csv_file(file_path):
+    try:
+        df = pd.read_csv(file_path)
+
+        # Perform data validation and cleansing operations on the DataFrame
+        # ...
+
+        # Save the cleaned data to a new file or perform further processing
+        df.to_csv('cleaned_data.csv', index=False)
+
+    except Exception as e:
+        print(f"Error processing CSV file: {str(e)}")
+
+# Function to read and process JSON files
+def process_json_file(file_path):
+    try:
+        with open(file_path) as json_file:
+            data = json.load(json_file)
+
+        # Perform data validation and cleansing operations on the JSON data
+        # ...
+
+        # Save the cleaned data to a new file or perform further processing
+        with open('cleaned_data.json', 'w') as json_output:
+            json.dump(data, json_output)
+
+    except Exception as e:
+        print(f"Error processing JSON file: {str(e)}")
+
+# File paths for example CSV and JSON files
+csv_file_path = 'example.csv'
+json_file_path = 'example.json'
+
+# Process CSV file
+process_csv_file(csv_file_path)
+
+# Process JSON file
+process_json_file(json_file_path)
+In the above code snippet, we define two functions, process_csv_file and process_json_file, to handle CSV and JSON files, respectively. These functions use pandas and json libraries to read the files and perform data validation and cleansing operations.
+
+Inside the functions, you can add your specific data validation and cleansing logic to handle missing values, incorrect data types, outliers, or any other necessary checks. Once the data is validated and cleaned, you can save it to a new file or perform further processing as per your requirements.
+
+To use this code, replace the csv_file_path and json_file_path variables with the actual file paths of your CSV and JSON files, respectively. Also, make sure you have the necessary libraries (pandas and json) installed before running the code.
+
+Remember to adapt the code based on the specific data validation and cleansing operations you need to perform on your files. This example provides a starting point, and you can modify and expand it according to your specific needs.
+
+2. Model Training:
+
+a. Build a machine learning model to predict customer churn based on a given dataset. Train the model using appropriate algorithms and evaluate its performance.
+b. Develop a model training pipeline that incorporates feature engineering techniques such as one-hot encoding, feature scaling, and dimensionality reduction.
+
+#libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv").drop("customerID",axis=1)
+df.head()
+gender	SeniorCitizen	Partner	Dependents	tenure	PhoneService	MultipleLines	InternetService	OnlineSecurity	OnlineBackup	DeviceProtection	TechSupport	StreamingTV	StreamingMovies	Contract	PaperlessBilling	PaymentMethod	MonthlyCharges	TotalCharges	Churn
+0	Female	0	Yes	No	1	No	No phone service	DSL	No	Yes	No	No	No	No	Month-to-month	Yes	Electronic check	29.85	29.85	No
+1	Male	0	No	No	34	Yes	No	DSL	Yes	No	Yes	No	No	No	One year	No	Mailed check	56.95	1889.5	No
+2	Male	0	No	No	2	Yes	No	DSL	Yes	Yes	No	No	No	No	Month-to-month	Yes	Mailed check	53.85	108.15	Yes
+3	Male	0	No	No	45	No	No phone service	DSL	Yes	No	Yes	Yes	No	No	One year	No	Bank transfer (automatic)	42.30	1840.75	No
+4	Female	0	No	No	2	Yes	No	Fiber optic	No	No	No	No	No	No	Month-to-month	Yes	Electronic check	70.70	151.65	Yes
+df.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 7043 entries, 0 to 7042
+Data columns (total 20 columns):
+ #   Column            Non-Null Count  Dtype  
+---  ------            --------------  -----  
+ 0   gender            7043 non-null   object 
+ 1   SeniorCitizen     7043 non-null   int64  
+ 2   Partner           7043 non-null   object 
+ 3   Dependents        7043 non-null   object 
+ 4   tenure            7043 non-null   int64  
+ 5   PhoneService      7043 non-null   object 
+ 6   MultipleLines     7043 non-null   object 
+ 7   InternetService   7043 non-null   object 
+ 8   OnlineSecurity    7043 non-null   object 
+ 9   OnlineBackup      7043 non-null   object 
+ 10  DeviceProtection  7043 non-null   object 
+ 11  TechSupport       7043 non-null   object 
+ 12  StreamingTV       7043 non-null   object 
+ 13  StreamingMovies   7043 non-null   object 
+ 14  Contract          7043 non-null   object 
+ 15  PaperlessBilling  7043 non-null   object 
+ 16  PaymentMethod     7043 non-null   object 
+ 17  MonthlyCharges    7043 non-null   float64
+ 18  TotalCharges      7043 non-null   object 
+ 19  Churn             7043 non-null   object 
+dtypes: float64(1), int64(2), object(17)
+memory usage: 1.1+ MB
+for i in range(len(df)):
+    try:
+        float(df["TotalCharges"].iloc[i])
+    except Exception as e:
+        print(e)
+        print(i)
+        df["TotalCharges"].iloc[i] = "0"
+could not convert string to float: ''
+488
+could not convert string to float: ''
+753
+could not convert string to float: ''
+936
+could not convert string to float: ''
+1082
+could not convert string to float: ''
+1340
+could not convert string to float: ''
+3331
+could not convert string to float: ''
+3826
+could not convert string to float: ''
+4380
+could not convert string to float: ''
+5218
+could not convert string to float: ''
+6670
+could not convert string to float: ''
+6754
+df["TotalCharges"] = df["TotalCharges"].astype(float)
+df["TotalCharges"] = df["TotalCharges"].replace(0 , np.mean(df["TotalCharges"]))
+df.isnull().sum()
+gender              0
+SeniorCitizen       0
+Partner             0
+Dependents          0
+tenure              0
+PhoneService        0
+MultipleLines       0
+InternetService     0
+OnlineSecurity      0
+OnlineBackup        0
+DeviceProtection    0
+TechSupport         0
+StreamingTV         0
+StreamingMovies     0
+Contract            0
+PaperlessBilling    0
+PaymentMethod       0
+MonthlyCharges      0
+TotalCharges        0
+Churn               0
+dtype: int64
+df.Churn = df.Churn.map({"No":0,"Yes":1})
+categorical_cols = df.select_dtypes(include="object").columns
+numerical_cols = df.select_dtypes(exclude='object').columns
+for i in df[categorical_cols]:
+    print({i:df[i].unique()})
+{'gender': array(['Female', 'Male'], dtype=object)}
+{'Partner': array(['Yes', 'No'], dtype=object)}
+{'Dependents': array(['No', 'Yes'], dtype=object)}
+{'PhoneService': array(['No', 'Yes'], dtype=object)}
+{'MultipleLines': array(['No phone service', 'No', 'Yes'], dtype=object)}
+{'InternetService': array(['DSL', 'Fiber optic', 'No'], dtype=object)}
+{'OnlineSecurity': array(['No', 'Yes', 'No internet service'], dtype=object)}
+{'OnlineBackup': array(['Yes', 'No', 'No internet service'], dtype=object)}
+{'DeviceProtection': array(['No', 'Yes', 'No internet service'], dtype=object)}
+{'TechSupport': array(['No', 'Yes', 'No internet service'], dtype=object)}
+{'StreamingTV': array(['No', 'Yes', 'No internet service'], dtype=object)}
+{'StreamingMovies': array(['No', 'Yes', 'No internet service'], dtype=object)}
+{'Contract': array(['Month-to-month', 'One year', 'Two year'], dtype=object)}
+{'PaperlessBilling': array(['Yes', 'No'], dtype=object)}
+{'PaymentMethod': array(['Electronic check', 'Mailed check', 'Bank transfer (automatic)',
+       'Credit card (automatic)'], dtype=object)}
+numerical_cols = numerical_cols[:-1]
+numerical_cols
+Index(['SeniorCitizen', 'tenure', 'MonthlyCharges', 'TotalCharges'], dtype='object')
+# dependent features and independent features
+X = df.drop('Churn', axis=1)
+y =df.Churn
+from sklearn.preprocessing import OneHotEncoder , StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import  Pipeline
+from sklearn.impute import SimpleImputer
+X_train , X_test , y_train , y_test  = train_test_split(X,y,test_size=0.3 , random_state=0)
+categorical_pipeline = Pipeline(
+    steps = [
+        ('imputer',SimpleImputer(strategy='most_frequent')),
+        ('encoder',OneHotEncoder(drop='if_binary'))
+    ]
+)
+
+numerical_pipeline = Pipeline(
+        steps=[
+            ('imputer',SimpleImputer(strategy='median')),
+            ('scaler', StandardScaler())
+        ]
+    )
+
+preprocessor = ColumnTransformer([
+    ('categorical_pipeline',categorical_pipeline , categorical_cols),
+    ('numerical_pipeline',numerical_pipeline , numerical_cols)
+])
+X_train =  pd.DataFrame(preprocessor.fit_transform(X_train),columns=preprocessor.get_feature_names_out())
+X_test = pd.DataFrame(preprocessor.transform(X_test),columns=preprocessor.get_feature_names_out())
+from sklearn.decomposition import PCA
+from sklearn.metrics import classification_report
+pipe = Pipeline(
+    [
+        ('pca', PCA(n_components=5)),
+        ('clf' , RandomForestClassifier())
+    ]
+)
+pipe.fit(X_train , y_train)
+y_pred = pipe.predict(X_test)
+report = classification_report(y_test , y_pred)
+print(report)
+              precision    recall  f1-score   support
+
+           0       0.82      0.88      0.85      1560
+           1       0.59      0.46      0.52       553
+
+    accuracy                           0.77      2113
+   macro avg       0.70      0.67      0.68      2113
+weighted avg       0.76      0.77      0.76      2113
+
+c. Train a deep learning model for image classification using transfer learning and fine-tuning techniques
+
+Here's an example code snippet that demonstrates training a deep learning model for image classification using transfer learning and fine-tuning techniques in Python, using the Keras library with the TensorFlow backend:
+
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.applications import VGG16
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, Dropout
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Load the pre-trained VGG16 model
+base_model = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+
+# Freeze the base model's layers
+for layer in base_model.layers:
+    layer.trainable = False
+
+# Create a new model
+model = Sequential()
+model.add(base_model)
+model.add(Flatten())
+model.add(Dense(256, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(10, activation='softmax'))
+
+# Compile the model
+model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Define data generators for training and validation data
+train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
+val_datagen = ImageDataGenerator(rescale=1./255)
+
+train_generator = train_datagen.flow_from_directory('train_directory', target_size=(224, 224), batch_size=32, class_mode='categorical')
+val_generator = val_datagen.flow_from_directory('validation_directory', target_size=(224, 224), batch_size=32, class_mode='categorical')
+
+# Train the model
+history = model.fit(train_generator, steps_per_epoch=len(train_generator), epochs=10, validation_data=val_generator, validation_steps=len(val_generator))
+
+# Fine-tune the model by unfreezing some layers
+for layer in model.layers[:15]:
+    layer.trainable = False
+for layer in model.layers[15:]:
+    layer.trainable = True
+
+# Recompile the model for fine-tuning
+model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Fine-tune the model
+history_fine = model.fit(train_generator, steps_per_epoch=len(train_generator), epochs=5, validation_data=val_generator, validation_steps=len(val_generator))
+In the above code, we utilize the VGG16 pre-trained model as the base model and add a few additional layers on top to create a new model for image classification. We freeze the layers of the pre-trained base model and train only the additional layers initially. Then, we fine-tune the model by unfreezing some layers of the base model and retraining the entire model.
+
+To use this code, make sure to replace 'train_directory' and 'validation_directory' with the actual directories containing your training and validation image datasets, respectively. The directory structure should follow the standard format for Keras' flow_from_directory method, where each class of images resides in a separate subdirectory.
+
+Additionally, you may need to adjust parameters, such as learning rates, batch sizes, number of classes, and other hyperparameters, according to your specific requirements.
+
+Remember to have the necessary dependencies installed, such as TensorFlow and Keras, before running the code.
+
+3. Model Validation:
+
+a. Implement cross-validation to evaluate the performance of a regression model for predicting housing prices.
+
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import  SGDRegressor
+from sklearn.model_selection import GridSearchCV , train_test_split
+from sklearn.metrics import mean_squared_error
+#using the boston housing dataset
+data_url = "http://lib.stat.cmu.edu/datasets/boston"
+raw_df = pd.read_csv(data_url, sep="\s+", skiprows=22, header=None)
+data = np.hstack([raw_df.values[::2, :], raw_df.values[1::2, :2]])
+target = raw_df.values[1::2, 2]
+X_train , X_test , y_train , y_test  = train_test_split(data,target,test_size=0.3,random_state=43)
+params = {
+    'loss':['squared_error', 'huber', 'epsilon_insensitive','squared_epsilon_insensitive'],
+    'penalty':['l1','l2','elasticnet'],
+    'alpha' : [0.00001,0.0001,0.001,0.01]
+}
+regressor = SGDRegressor()
+reg = GridSearchCV(regressor ,param_grid=params , cv=5 , scoring= 'neg_root_mean_squared_error',verbose=3 )
+reg.fit(X_train,y_train)
+Fitting 5 folds for each of 48 candidates, totalling 240 fits
+[CV 1/5] END alpha=1e-05, loss=squared_error, penalty=l1;, score=-106221720856358.172 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=squared_error, penalty=l1;, score=-238435413500030.625 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=squared_error, penalty=l1;, score=-189103348369222.125 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=squared_error, penalty=l1;, score=-107292957963757.641 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=squared_error, penalty=l1;, score=-97563109314101.797 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=squared_error, penalty=l2;, score=-104252824922426.141 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=squared_error, penalty=l2;, score=-153943831187059.625 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=squared_error, penalty=l2;, score=-89097445959817.453 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=squared_error, penalty=l2;, score=-241409319774792.656 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=squared_error, penalty=l2;, score=-218430886290738.906 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=squared_error, penalty=elasticnet;, score=-80300547096453.297 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=squared_error, penalty=elasticnet;, score=-198692994523276.188 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=squared_error, penalty=elasticnet;, score=-152313109034560.156 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=squared_error, penalty=elasticnet;, score=-196345204112385.031 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=squared_error, penalty=elasticnet;, score=-351406902337092.688 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=huber, penalty=l1;, score=-7.918 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=huber, penalty=l1;, score=-7.323 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=huber, penalty=l1;, score=-16.328 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=huber, penalty=l1;, score=-26.684 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=huber, penalty=l1;, score=-27.409 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=huber, penalty=l2;, score=-9.831 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=huber, penalty=l2;, score=-24.616 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=huber, penalty=l2;, score=-22.015 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=huber, penalty=l2;, score=-20.444 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=huber, penalty=l2;, score=-20.238 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=huber, penalty=elasticnet;, score=-24.799 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=huber, penalty=elasticnet;, score=-21.146 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=huber, penalty=elasticnet;, score=-22.234 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=huber, penalty=elasticnet;, score=-15.966 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=huber, penalty=elasticnet;, score=-13.668 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l1;, score=-212.209 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l1;, score=-45.034 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l1;, score=-101.320 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l1;, score=-142.965 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l1;, score=-100.078 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l2;, score=-177.544 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l2;, score=-180.184 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l2;, score=-37.430 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l2;, score=-43.612 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=l2;, score=-179.557 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=elasticnet;, score=-47.579 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=elasticnet;, score=-131.029 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=elasticnet;, score=-115.347 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=elasticnet;, score=-38.858 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=epsilon_insensitive, penalty=elasticnet;, score=-143.985 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l1;, score=-143788551891890.719 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l1;, score=-96202561466204.781 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l1;, score=-109120546396770.141 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l1;, score=-463730842266041.812 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l1;, score=-136724550352408.734 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l2;, score=-130096009600392.500 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l2;, score=-64231537309336.016 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l2;, score=-29772310547064.875 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l2;, score=-147064684587580.500 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=l2;, score=-232050457501817.781 total time=   0.0s
+[CV 1/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-140166097457334.172 total time=   0.0s
+[CV 2/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-139737702721416.062 total time=   0.0s
+[CV 3/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-238012124748282.344 total time=   0.0s
+[CV 4/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-270330942692644.250 total time=   0.0s
+[CV 5/5] END alpha=1e-05, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-215032702166788.031 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=squared_error, penalty=l1;, score=-69872084074231.734 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=squared_error, penalty=l1;, score=-168175882059044.969 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=squared_error, penalty=l1;, score=-177681987269005.562 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=squared_error, penalty=l1;, score=-226333499731262.906 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=squared_error, penalty=l1;, score=-173863519527447.344 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=squared_error, penalty=l2;, score=-183061100601205.031 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=squared_error, penalty=l2;, score=-126266497739129.641 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=squared_error, penalty=l2;, score=-134281928512244.312 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=squared_error, penalty=l2;, score=-217147487036615.438 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=squared_error, penalty=l2;, score=-74306166053861.828 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=squared_error, penalty=elasticnet;, score=-196213580811021.406 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=squared_error, penalty=elasticnet;, score=-187051558941678.219 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=squared_error, penalty=elasticnet;, score=-196418962376343.781 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=squared_error, penalty=elasticnet;, score=-76391839036350.062 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=squared_error, penalty=elasticnet;, score=-24938157057147.887 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=huber, penalty=l1;, score=-17.485 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=huber, penalty=l1;, score=-12.439 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=huber, penalty=l1;, score=-29.715 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=huber, penalty=l1;, score=-21.483 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=huber, penalty=l1;, score=-7.658 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=huber, penalty=l2;, score=-13.002 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=huber, penalty=l2;, score=-17.150 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=huber, penalty=l2;, score=-12.946 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=huber, penalty=l2;, score=-15.589 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=huber, penalty=l2;, score=-58.578 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=huber, penalty=elasticnet;, score=-19.950 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=huber, penalty=elasticnet;, score=-9.519 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=huber, penalty=elasticnet;, score=-28.767 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=huber, penalty=elasticnet;, score=-8.055 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=huber, penalty=elasticnet;, score=-23.795 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l1;, score=-102.731 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l1;, score=-59.579 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l1;, score=-170.276 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l1;, score=-127.267 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l1;, score=-180.473 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l2;, score=-92.515 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l2;, score=-122.864 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l2;, score=-121.277 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l2;, score=-92.536 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=l2;, score=-128.435 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=elasticnet;, score=-41.872 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=elasticnet;, score=-164.467 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=elasticnet;, score=-86.985 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=elasticnet;, score=-78.621 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=epsilon_insensitive, penalty=elasticnet;, score=-89.460 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l1;, score=-59775841976917.320 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l1;, score=-221763883907894.000 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l1;, score=-85757027937556.891 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l1;, score=-82922307963253.969 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l1;, score=-168216134665421.656 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l2;, score=-36176121989579.633 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l2;, score=-223596999857349.375 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l2;, score=-42464936113670.344 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l2;, score=-143200780206106.375 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=l2;, score=-43610367842787.430 total time=   0.0s
+[CV 1/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-282267751020898.062 total time=   0.0s
+[CV 2/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-242845255596569.312 total time=   0.0s
+[CV 3/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-62347016153972.891 total time=   0.0s
+[CV 4/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-165242991540850.844 total time=   0.0s
+[CV 5/5] END alpha=0.0001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-143620794496832.406 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=squared_error, penalty=l1;, score=-25966231627998.277 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=squared_error, penalty=l1;, score=-339548698236028.312 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=squared_error, penalty=l1;, score=-29863982488233.680 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=squared_error, penalty=l1;, score=-211213322011130.938 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=squared_error, penalty=l1;, score=-42842082882223.805 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=squared_error, penalty=l2;, score=-174255838340375.906 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=squared_error, penalty=l2;, score=-270825044316049.906 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=squared_error, penalty=l2;, score=-204171154411512.750 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=squared_error, penalty=l2;, score=-281974589382615.188 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=squared_error, penalty=l2;, score=-57269324097730.133 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=squared_error, penalty=elasticnet;, score=-60891128920771.516 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=squared_error, penalty=elasticnet;, score=-114112256095684.375 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=squared_error, penalty=elasticnet;, score=-120873750019109.359 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=squared_error, penalty=elasticnet;, score=-211713816228668.625 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=squared_error, penalty=elasticnet;, score=-154281271406937.781 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=huber, penalty=l1;, score=-32.067 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=huber, penalty=l1;, score=-8.696 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=huber, penalty=l1;, score=-28.561 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=huber, penalty=l1;, score=-23.921 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=huber, penalty=l1;, score=-30.994 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=huber, penalty=l2;, score=-33.768 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=huber, penalty=l2;, score=-14.927 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=huber, penalty=l2;, score=-11.463 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=huber, penalty=l2;, score=-7.963 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=huber, penalty=l2;, score=-21.615 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=huber, penalty=elasticnet;, score=-8.389 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=huber, penalty=elasticnet;, score=-25.041 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=huber, penalty=elasticnet;, score=-20.101 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=huber, penalty=elasticnet;, score=-17.717 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=huber, penalty=elasticnet;, score=-10.317 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l1;, score=-46.475 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l1;, score=-65.882 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l1;, score=-15.273 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l1;, score=-41.975 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l1;, score=-48.515 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l2;, score=-80.698 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l2;, score=-77.336 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l2;, score=-14.024 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l2;, score=-136.414 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=epsilon_insensitive, penalty=l2;, score=-64.063 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=epsilon_insensitive, penalty=elasticnet;, score=-65.195 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=epsilon_insensitive, penalty=elasticnet;, score=-101.328 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=epsilon_insensitive, penalty=elasticnet;, score=-116.951 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=epsilon_insensitive, penalty=elasticnet;, score=-164.214 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=epsilon_insensitive, penalty=elasticnet;, score=-252.311 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l1;, score=-99497880861445.812 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l1;, score=-128061073624413.297 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l1;, score=-151987472272232.062 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l1;, score=-173842801718215.719 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l1;, score=-228478353229406.250 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l2;, score=-162232900040941.594 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l2;, score=-203847731293432.812 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l2;, score=-286719085223027.125 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l2;, score=-196411499301514.281 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=l2;, score=-212412153681274.406 total time=   0.0s
+[CV 1/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-80037932461810.875 total time=   0.0s
+[CV 2/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-182231620282778.688 total time=   0.0s
+[CV 3/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-70005766963298.359 total time=   0.0s
+[CV 4/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-128701116884297.297 total time=   0.0s
+[CV 5/5] END alpha=0.001, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-296041525558108.125 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=squared_error, penalty=l1;, score=-83413760431266.531 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=squared_error, penalty=l1;, score=-293207191373227.812 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=squared_error, penalty=l1;, score=-216664761671751.625 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=squared_error, penalty=l1;, score=-128068086524938.375 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=squared_error, penalty=l1;, score=-40450870328739.820 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=squared_error, penalty=l2;, score=-94758790677372.734 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=squared_error, penalty=l2;, score=-113159761409674.344 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=squared_error, penalty=l2;, score=-211955771323034.281 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=squared_error, penalty=l2;, score=-78464561822680.531 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=squared_error, penalty=l2;, score=-159703802605107.656 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=squared_error, penalty=elasticnet;, score=-83139575185240.906 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=squared_error, penalty=elasticnet;, score=-172380245053637.125 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=squared_error, penalty=elasticnet;, score=-65310832349620.742 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=squared_error, penalty=elasticnet;, score=-255578127402918.625 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=squared_error, penalty=elasticnet;, score=-74747779378034.812 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=huber, penalty=l1;, score=-11.780 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=huber, penalty=l1;, score=-8.978 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=huber, penalty=l1;, score=-34.585 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=huber, penalty=l1;, score=-9.754 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=huber, penalty=l1;, score=-19.049 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=huber, penalty=l2;, score=-18.677 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=huber, penalty=l2;, score=-27.360 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=huber, penalty=l2;, score=-20.070 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=huber, penalty=l2;, score=-17.259 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=huber, penalty=l2;, score=-18.339 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=huber, penalty=elasticnet;, score=-23.836 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=huber, penalty=elasticnet;, score=-27.478 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=huber, penalty=elasticnet;, score=-17.395 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=huber, penalty=elasticnet;, score=-10.233 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=huber, penalty=elasticnet;, score=-10.352 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l1;, score=-59.976 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l1;, score=-200.606 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l1;, score=-273.124 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l1;, score=-10.803 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l1;, score=-203.989 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l2;, score=-86.756 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l2;, score=-137.632 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l2;, score=-117.579 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l2;, score=-319.198 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=epsilon_insensitive, penalty=l2;, score=-124.022 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=epsilon_insensitive, penalty=elasticnet;, score=-96.486 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=epsilon_insensitive, penalty=elasticnet;, score=-17.542 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=epsilon_insensitive, penalty=elasticnet;, score=-67.403 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=epsilon_insensitive, penalty=elasticnet;, score=-163.241 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=epsilon_insensitive, penalty=elasticnet;, score=-134.138 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l1;, score=-135530273099500.781 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l1;, score=-21767565439157.969 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l1;, score=-81645585063931.844 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l1;, score=-191963076364366.625 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l1;, score=-150582915231682.625 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l2;, score=-247251206214886.188 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l2;, score=-192404488727363.500 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l2;, score=-109561925257237.250 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l2;, score=-162420395016439.812 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=l2;, score=-176692087070866.094 total time=   0.0s
+[CV 1/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-122548655968435.438 total time=   0.0s
+[CV 2/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-220219526533438.344 total time=   0.0s
+[CV 3/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-135845488563618.547 total time=   0.0s
+[CV 4/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-36347641214877.430 total time=   0.0s
+[CV 5/5] END alpha=0.01, loss=squared_epsilon_insensitive, penalty=elasticnet;, score=-142894307251694.469 total time=   0.0s
+GridSearchCV(cv=5, estimator=SGDRegressor(),
+             param_grid={'alpha': [1e-05, 0.0001, 0.001, 0.01],
+                         'loss': ['squared_error', 'huber',
+                                  'epsilon_insensitive',
+                                  'squared_epsilon_insensitive'],
+                         'penalty': ['l1', 'l2', 'elasticnet']},
+             scoring='neg_root_mean_squared_error', verbose=3)
+In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook.
+On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.
+reg.best_estimator_
+SGDRegressor(alpha=0.001, loss='huber', penalty='elasticnet')
+In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook.
+On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.
+y_pred = reg.predict(X_test)
+mse = mean_squared_error(y_test,y_pred)
+rmse = np.sqrt(mse)
+print(rmse)
+12.267201956718669
+b. Perform model validation using different evaluation metrics such as accuracy, precision, recall, and F1 score for a binary classification problem.
+
+Already answered as a part of Question no. 2.a and 2.b
+
+c. Design a model validation strategy that incorporates stratified sampling to handle imbalanced datasets.
+
+from sklearn.datasets import load_breast_cancer
+import warnings
+warnings.filterwarnings("ignore")
+dataset = load_breast_cancer()
+X = dataset['data']
+y = dataset['target']
+import numpy as np
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score , precision_score , recall_score , f1_score 
+from sklearn.linear_model import  LogisticRegression
+
+# Create an instance of StratifiedKFold
+kfold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+# Initialize lists to store evaluation metrics
+accuracy_scores = []
+precision_scores = []
+recall_scores = []
+f1_scores = []
+
+# Perform cross-validation using stratified sampling
+for train_idx, val_idx in kfold.split(X, y):
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
+
+    # Train and evaluate your model on the current fold
+    model = LogisticRegression()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_val)
+
+    # Calculate evaluation metrics
+    accuracy = accuracy_score(y_val, y_pred)
+    precision = precision_score(y_val, y_pred)
+    recall = recall_score(y_val, y_pred)
+    f1 = f1_score(y_val, y_pred)
+
+    # Store the evaluation metrics for the current fold
+    accuracy_scores.append(accuracy)
+    precision_scores.append(precision)
+    recall_scores.append(recall)
+    f1_scores.append(f1)
+
+# Calculate the average performance metrics across all folds
+avg_accuracy = np.mean(accuracy_scores)
+avg_precision = np.mean(precision_scores)
+avg_recall = np.mean(recall_scores)
+avg_f1 = np.mean(f1_scores)
+
+# Print the average performance metrics
+print("Average Accuracy:", avg_accuracy)
+print("Average Precision:", avg_precision)
+print("Average Recall:", avg_recall)
+print("Average F1-score:", avg_f1)
+Average Accuracy: 0.9455674584691819
+Average Precision: 0.9460966289135303
+Average Recall: 0.9692097026604071
+Average F1-score: 0.9572072923626205
+4. Deployment Strategy:
+
+a. Create a deployment strategy for a machine learning model that provides real-time recommendations based on user interactions.
+
+The complete implementation of a deployment strategy for a machine learning model providing real-time recommendations based on user interactions involves multiple components and infrastructure setup. Below is an example Python code snippet that demonstrates the basic structure of the recommendation generation part:
+
+import logging
+import time
+
+# Define a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# Function to generate recommendations based on user interactions
+def generate_recommendations(user_interaction):
+    # Apply preprocessing and feature engineering steps to user_interaction
+    preprocessed_data = preprocess(user_interaction)
+
+    # Pass the preprocessed data through the deployed model
+    recommendations = model.predict(preprocessed_data)
+
+    # Apply post-processing and filtering steps to recommendations
+    filtered_recommendations = post_process(recommendations)
+
+    return filtered_recommendations
+
+# Example function to preprocess user interactions
+def preprocess(user_interaction):
+    # Apply necessary preprocessing steps such as encoding, scaling, etc.
+    preprocessed_data = ...  # Preprocessed data ready for model input
+    return preprocessed_data
+
+# Example function for post-processing and filtering recommendations
+def post_process(recommendations):
+    # Apply necessary post-processing and filtering steps
+    filtered_recommendations = ...  # Filtered recommendations ready for response
+    return filtered_recommendations
+
+# Example code for real-time recommendation generation
+while True:
+    try:
+        # Simulate receiving user interaction data in real-time
+        user_interaction = receive_user_interaction()
+
+        # Generate recommendations based on user interaction
+        recommendations = generate_recommendations(user_interaction)
+
+        # Send recommendations to the user-facing application or API
+        send_recommendations(recommendations)
+
+    except Exception as e:
+        logger.error("Error in real-time recommendation generation: %s", str(e))
+
+    # Sleep for a certain period before processing the next user interaction
+    time.sleep(1)
+Please note that this is a simplified code snippet meant to illustrate the logic of recommendation generation in a real-time scenario. The implementation of preprocess, post_process, receive_user_interaction, and send_recommendations functions should be tailored to your specific requirements and infrastructure.
+
+In a complete implementation, you would need to set up the necessary infrastructure for real-time data ingestion, data transformation, model serving, logging, and deployment orchestration. Additionally, you'll need to consider scalability, error handling, security, and performance optimization based on your specific deployment environment and requirements.
+
+Remember to adapt the code to your specific model, data preprocessing, and post-processing needs, as well as integrate it with your existing infrastructure and deployment pipeline.
+
+b. Develop a deployment pipeline that automates the process of deploying machine learning models to cloud platforms such as AWS or Azure.
+
+Deploying machine learning models to cloud platforms like AWS or Azure typically involves several steps, including model packaging, infrastructure provisioning, and deployment automation. Here's an example of a Python code snippet that demonstrates the basic structure of a deployment pipeline using AWS as the cloud platform:
+
+import boto3
+import zipfile
+import os
+
+# Set AWS credentials and region
+AWS_ACCESS_KEY_ID = 'your-access-key'
+AWS_SECRET_ACCESS_KEY = 'your-secret-access-key'
+AWS_REGION = 'your-aws-region'
+
+# Set model and deployment parameters
+MODEL_NAME = 'your-model-name'
+DEPLOYMENT_NAME = 'your-deployment-name'
+BUCKET_NAME = 'your-s3-bucket-name'
+ZIP_FILE_NAME = 'model.zip'
+ENTRY_FILE_NAME = 'app.py'
+
+# Create a new AWS S3 client
+s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, region_name=AWS_REGION)
+
+# Upload the model file to S3 bucket
+def upload_model():
+    s3.upload_file(ZIP_FILE_NAME, BUCKET_NAME, ZIP_FILE_NAME)
+    print(f"Uploaded {ZIP_FILE_NAME} to S3 bucket {BUCKET_NAME}")
+
+# Create a new AWS SageMaker client
+sm = boto3.client('sagemaker', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, region_name=AWS_REGION)
+
+# Create a new SageMaker endpoint configuration
+def create_endpoint_config():
+    response = sm.create_endpoint_config(
+        EndpointConfigName=DEPLOYMENT_NAME,
+        ProductionVariants=[
+            {
+                'VariantName': 'AllTraffic',
+                'ModelName': MODEL_NAME,
+                'InitialInstanceCount': 1,
+                'InstanceType': 'ml.t2.medium',
+                'InitialVariantWeight': 1
+            }
+        ]
+    )
+    print(f"Created endpoint configuration: {DEPLOYMENT_NAME}")
+
+# Create a new SageMaker endpoint
+def create_endpoint():
+    response = sm.create_endpoint(
+        EndpointName=DEPLOYMENT_NAME,
+        EndpointConfigName=DEPLOYMENT_NAME
+    )
+    print(f"Created endpoint: {DEPLOYMENT_NAME}")
+
+# Package the model and required files into a zip file
+def package_model():
+    with zipfile.ZipFile(ZIP_FILE_NAME, 'w') as zipf:
+        zipf.write(ENTRY_FILE_NAME)
+        zipf.write('your_model.pkl')
+
+    print(f"Packaged model and files into {ZIP_FILE_NAME}")
+
+# Clean up temporary files
+def clean_up():
+    os.remove(ZIP_FILE_NAME)
+    print("Cleaned up temporary files")
+
+# Main deployment pipeline
+def deploy():
+    # Package the model and required files
+    package_model()
+
+    # Upload the model to S3
+    upload_model()
+
+    # Create an endpoint configuration
+    create_endpoint_config()
+
+    # Create an endpoint
+    create_endpoint()
+
+    # Clean up temporary files
+    clean_up()
+
+# Call the main deployment pipeline function
+deploy()
+This code assumes that you have prepared the model file (your_model.pkl), the deployment entry file (app.py), and the necessary AWS credentials (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY). Modify the MODEL_NAME, DEPLOYMENT_NAME, BUCKET_NAME, ZIP_FILE_NAME, and ENTRY_FILE_NAME variables according to your specific requirements.
+
+The code uses the AWS SDK for Python (boto3) to interact with AWS services. It uploads the model file to an S3 bucket, creates an endpoint configuration, and creates an endpoint for the deployment. It packages the model file and the entry file into a zip file (model.zip) for uploading. Once the deployment is complete, it cleans up the temporary files.
+
+Please note that this code is a simplified example and should be adapted to your specific deployment requirements, such as customizing the instance type, adding additional files, or setting up specific networking configurations. Additionally, ensure that you have the necessary dependencies (boto3, zipfile) installed before running the code.
+
+To deploy the model to Azure or other cloud platforms, you'll need to use the respective SDKs and APIs provided by the platform. The general concept of packaging the model, uploading it to storage, and creating an endpoint or service remains similar, but the specific implementation details will differ.
+
+c. Design a monitoring and maintenance strategy for deployed models to ensure their performance and reliability over time.
+
+Designing a monitoring and maintenance strategy for deployed machine learning models is crucial to ensure their ongoing performance, reliability, and to detect any issues that may arise. Below is an example of a monitoring and maintenance strategy along with corresponding Python code snippets:
+
+Performance Monitoring:
+
+Set up monitoring for key performance metrics such as accuracy, precision, recall, and F1-score.
+Calculate and log these metrics periodically to track the model's performance over time.
+Detect any significant changes in performance that may indicate model degradation.
+import logging
+import time
+
+# Define a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# Function to calculate and log model performance metrics
+def monitor_performance():
+    # Calculate performance metrics
+    accuracy = calculate_accuracy()
+    precision = calculate_precision()
+    recall = calculate_recall()
+    f1_score = calculate_f1_score()
+
+    # Log the performance metrics
+    logger.info("Accuracy: %.4f", accuracy)
+    logger.info("Precision: %.4f", precision)
+    logger.info("Recall: %.4f", recall)
+    logger.info("F1-score: %.4f", f1_score)
+
+# Example code for periodically monitoring performance
+while True:
+    try:
+        # Perform performance monitoring
+        monitor_performance()
+    except Exception as e:
+        logger.error("Error in performance monitoring: %s", str(e))
+
+    # Sleep for a specific interval before monitoring again
+    time.sleep(3600)  # Sleep for 1 hour
+Data Drift Monitoring:
+
+Set up mechanisms to monitor data drift and distributional changes in the input data over time.
+Compare the current data distribution with the training data distribution.
+Detect significant deviations that may impact the model's performance and trigger alerts or retraining.
+# Function to monitor data drift
+def monitor_data_drift():
+    # Load the training data distribution
+    training_data_distribution = load_training_data_distribution()
+
+    # Get the current data distribution
+    current_data_distribution = get_current_data_distribution()
+
+    # Compare the distributions and detect drift
+    drift_detected = detect_data_drift(training_data_distribution, current_data_distribution)
+
+    # Trigger alert or retraining based on drift detection
+    if drift_detected:
+        trigger_alert()
+        retrain_model()
+
+# Example code for periodically monitoring data drift
+while True:
+    try:
+        # Perform data drift monitoring
+        monitor_data_drift()
+    except Exception as e:
+        logger.error("Error in data drift monitoring: %s", str(e))
+
+    # Sleep for a specific interval before monitoring again
+    time.sleep(3600)  # Sleep for 1 hour
+Model Health Checks:
+
+Regularly evaluate the model's health and integrity by performing sanity checks on input/output data and model predictions.
+Detect anomalies or inconsistencies in the model's behavior and trigger alerts or initiate corrective actions.
+# Function to perform model health checks
+def perform_health_checks():
+    # Perform checks on input/output data and model predictions
+    data_consistency_check = check_input_output_consistency()
+    anomaly_detection_check = check_for_anomalies()
+
+    # Trigger alerts or corrective actions based on health check results
+    if not data_consistency_check:
+        trigger_alert("Data inconsistency detected")
+    if anomaly_detection_check:
+        initiate_corrective_action()
+
+# Example code for periodically performing model health checks
+while True:
+    try:
+        # Perform model health checks
+        perform_health_checks()
+    except Exception as e:
+        logger.error("Error in model health checks: %s", str(e))
+
+    # Sleep for a specific interval before performing health checks again
+    time.sleep(3600)  # Sleep for 1 hour
+Model Retraining:
+
+Define retraining criteria based on performance degradation, data drift, or predefined schedules.
+Automatically trigger the retraining process when the defined criteria are met.
+# Function to trigger model retraining
+def retrain_model():
+    # Perform necessary steps for model retraining
+    data_preparation()
+    model_training()
+    model_evaluation()
+    model_deployment()
+
+# Example code for periodically checking retraining criteria and triggering retraining
+while True:
+    try:
+        # Check retraining criteria and trigger retraining if met
+        if is_retraining_required():
+            retrain_model()
+    except Exception as e:
+        logger.error("Error in retraining process: %s", str(e))
+
+    # Sleep for a specific interval before checking retraining criteria again
+    time.sleep(86400)  # Sleep for 1 day
+Remember to adapt the code snippets to fit your specific model, monitoring requirements, and infrastructure. Additionally, integrate the code snippets with appropriate logging mechanisms and alerting systems to ensure timely notifications when issues arise.
